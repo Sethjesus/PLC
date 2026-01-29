@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PLC 計算機</title>
+    <title>PLC 計算機 - 完整版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -14,6 +14,8 @@
             --plc-red: #f44336;
             --plc-gray: #37474f;
             --plc-light: #eceff1;
+            --plc-purple: #7b1fa2;
+            --plc-yellow: #ffeb3b;
         }
         
         * {
@@ -33,7 +35,7 @@
             height: 100vh;
         }
         
-        /* 簡潔容器 */
+        /* 主容器 */
         .plc-container {
             height: 100vh;
             display: flex;
@@ -59,7 +61,7 @@
             gap: 8px;
         }
         
-        /* 狀態指示器 - 更小 */
+        /* 狀態指示器 */
         .status-bar {
             display: flex;
             justify-content: space-between;
@@ -84,12 +86,16 @@
             animation: pulse 2s infinite;
         }
         
+        .led.warning {
+            background-color: var(--plc-orange);
+        }
+        
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.6; }
         }
         
-        /* 顯示器區域 - 緊湊 */
+        /* 顯示器區域 */
         .display-container {
             background-color: #000;
             margin: 10px;
@@ -119,7 +125,7 @@
             word-break: break-all;
         }
         
-        /* 標籤切換 - 更小 */
+        /* 標籤切換 */
         .tab-container {
             display: flex;
             margin: 0 10px;
@@ -145,7 +151,7 @@
             border-bottom: 2px solid var(--plc-green);
         }
         
-        /* 主要內容區域 - 佔據剩餘空間 */
+        /* 主要內容區域 */
         .main-content {
             flex: 1;
             overflow-y: auto;
@@ -200,7 +206,7 @@
         }
         
         .plc-btn.memory {
-            background-color: #7b1fa2;
+            background-color: var(--plc-purple);
             font-size: 0.8rem;
         }
         
@@ -231,7 +237,7 @@
             gap: 6px;
         }
         
-        .data-types {
+        .data-types-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 8px;
@@ -259,40 +265,40 @@
             text-overflow: ellipsis;
         }
         
-        /* 變數面板 */
-        .variables-panel {
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--plc-gray);
+        /* 變數面板 - 網格佈局 */
+        .variables-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
         }
         
-        .variable-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        .variable-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #4fc3f7;
         }
         
-        .variable-row:last-child {
-            border-bottom: none;
-        }
-        
-        .var-name {
+        .var-title {
+            font-size: 0.8rem;
             color: #4fc3f7;
+            margin-bottom: 5px;
             font-weight: bold;
-            font-size: 0.85rem;
         }
         
-        .var-value {
+        .var-content {
             font-family: 'Courier New', monospace;
+            font-size: 1rem;
             color: white;
-            font-size: 0.85rem;
         }
         
-        /* 移除頁尾，改用簡潔指示 */
-        .plc-footer {
-            display: none;
+        /* 操作按鈕區域 */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 15px;
         }
         
         /* 面板切換動畫 */
@@ -336,6 +342,11 @@
                 height: 100%;
                 overflow-y: auto;
             }
+            
+            .data-types-grid,
+            .variables-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
         /* 小手機優化 */
@@ -354,6 +365,19 @@
                 padding: 8px 3px;
                 font-size: 0.8rem;
             }
+            
+            .data-types-grid,
+            .variables-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 中大型手機 */
+        @media (min-width: 480px) and (max-width: 768px) {
+            .data-types-grid,
+            .variables-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         
         /* 防止長按選單 */
@@ -371,7 +395,7 @@
         <div class="plc-header">
             <h1>
                 <i class="fas fa-calculator"></i>
-                PLC 計算機
+                PLC 計算機 - 完整版
             </h1>
         </div>
         
@@ -413,7 +437,7 @@
         
         <!-- 主要內容 -->
         <div class="main-content">
-            <!-- 計算機面板 -->
+            <!-- ========== 計算機面板 ========== -->
             <div id="calculator-panel" class="panel active">
                 <div class="buttons-grid">
                     <!-- PLC功能按鈕 -->
@@ -468,108 +492,181 @@
                 
                 <!-- 快捷提示 -->
                 <div style="color: #aaa; font-size: 0.75rem; text-align: center; margin-top: 10px;">
-                    提示: ADD/SUB/MUL/DIV 為 PLC 標準指令
+                    提示: ADD/SUB/MUL/DIV 為 PLC 標準指令 | MS/MR/MC 記憶體操作
                 </div>
             </div>
             
-            <!-- 數據類型面板 -->
+            <!-- ========== 數據類型面板 ========== -->
             <div id="data-panel" class="panel">
                 <div class="data-panel">
                     <div class="panel-title">
                         <i class="fas fa-table"></i>
-                        數據類型
+                        PLC 數據類型顯示
                     </div>
                     
-                    <div class="data-types">
+                    <div class="data-types-grid">
                         <div class="data-type-item">
-                            <div class="data-label">BOOL</div>
+                            <div class="data-label">BOOL (布林值)</div>
                             <div id="bool-value" class="data-value">FALSE</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">BYTE</div>
+                            <div class="data-label">BYTE (位元組)</div>
                             <div id="byte-value" class="data-value">0</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">INT</div>
+                            <div class="data-label">INT (整數)</div>
                             <div id="int-value" class="data-value">0</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">DINT</div>
+                            <div class="data-label">DINT (雙整數)</div>
                             <div id="dint-value" class="data-value">0</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">REAL</div>
+                            <div class="data-label">REAL (實數)</div>
                             <div id="real-value" class="data-value">0.0</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">HEX</div>
-                            <div id="hex-value" class="data-value">0x0</div>
+                            <div class="data-label">WORD (字)</div>
+                            <div id="word-value" class="data-value">0</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">BIN</div>
+                            <div class="data-label">DWORD (雙字)</div>
+                            <div id="dword-value" class="data-value">0</div>
+                        </div>
+                        <div class="data-type-item">
+                            <div class="data-label">HEX (十六進位)</div>
+                            <div id="hex-value" class="data-value">0x0000</div>
+                        </div>
+                        <div class="data-type-item">
+                            <div class="data-label">BIN (二進位)</div>
                             <div id="bin-value" class="data-value">00000000</div>
                         </div>
                         <div class="data-type-item">
-                            <div class="data-label">WORD</div>
-                            <div id="word-value" class="data-value">0</div>
+                            <div class="data-label">BCD (十進位編碼)</div>
+                            <div id="bcd-value" class="data-value">0000</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="variables-panel" style="margin-top: 10px;">
+                <div class="data-panel" style="margin-top: 10px;">
                     <div class="panel-title">
                         <i class="fas fa-info-circle"></i>
-                        範圍說明
+                        數據類型說明
                     </div>
                     <div style="font-size: 0.8rem; color: #ccc; line-height: 1.4;">
-                        <div style="margin-bottom: 5px;">• BOOL: TRUE/FALSE</div>
-                        <div style="margin-bottom: 5px;">• BYTE: 0 ~ 255</div>
-                        <div style="margin-bottom: 5px;">• INT: -32768 ~ 32767</div>
-                        <div>• REAL: 浮點數 (小數)</div>
+                        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 5px;">
+                            <div><strong>BOOL:</strong></div><div>TRUE/FALSE (1位元)</div>
+                            <div><strong>BYTE:</strong></div><div>0 ~ 255 (8位元)</div>
+                            <div><strong>INT:</strong></div><div>-32768 ~ 32767</div>
+                            <div><strong>DINT:</strong></div><div>±21億 (32位元)</div>
+                            <div><strong>REAL:</strong></div><div>浮點數 (帶小數)</div>
+                            <div><strong>WORD:</strong></div><div>16位元無符號</div>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <!-- PLC變數面板 -->
+            <!-- ========== PLC變數面板 ========== -->
             <div id="variables-panel" class="panel">
-                <div class="variables-panel">
+                <!-- 常用記憶體變數 -->
+                <div class="data-panel">
                     <div class="panel-title">
-                        <i class="fas fa-cogs"></i>
-                        PLC 變數
+                        <i class="fas fa-memory"></i>
+                        常用記憶體變數 (MW/MD)
                     </div>
                     
-                    <div class="variable-row">
-                        <div class="var-name">MW100</div>
-                        <div id="mw100-value" class="var-value">0</div>
+                    <div class="variables-grid">
+                        <div class="variable-card">
+                            <div class="var-title">MW10 (常用暫存)</div>
+                            <div id="mw10-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MW20 (計算暫存)</div>
+                            <div id="mw20-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MW50 (參數儲存)</div>
+                            <div id="mw50-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MW100 (主變數)</div>
+                            <div id="mw100-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MD30 (實數變數)</div>
+                            <div id="md30-value" class="var-content">0.0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MD40 (實數變數)</div>
+                            <div id="md40-value" class="var-content">0.0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">MW200 (計數暫存)</div>
+                            <div id="mw200-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">DB1.DBW0 (資料區塊)</div>
+                            <div id="db1-value" class="var-content">0</div>
+                        </div>
                     </div>
-                    <div class="variable-row">
-                        <div class="var-name">MD104</div>
-                        <div id="md104-value" class="var-value">0.0</div>
+                </div>
+                
+                <!-- 輸入輸出與計時器 -->
+                <div class="data-panel" style="margin-top: 10px;">
+                    <div class="panel-title">
+                        <i class="fas fa-cogs"></i>
+                        輸入輸出與計時器
                     </div>
-                    <div class="variable-row">
-                        <div class="var-name">I0.0</div>
-                        <div id="input-value" class="var-value">OFF</div>
-                    </div>
-                    <div class="variable-row">
-                        <div class="var-name">Q0.0</div>
-                        <div id="output-value" class="var-value">OFF</div>
-                    </div>
-                    <div class="variable-row">
-                        <div class="var-name">C0</div>
-                        <div id="counter-value" class="var-value">0</div>
+                    
+                    <div class="variables-grid">
+                        <div class="variable-card">
+                            <div class="var-title">I0.0 (輸入位元)</div>
+                            <div id="i00-value" class="var-content">OFF</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">Q0.0 (輸出位元)</div>
+                            <div id="q00-value" class="var-content">OFF</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">I0.1 (輸入位元)</div>
+                            <div id="i01-value" class="var-content">OFF</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">Q0.1 (輸出位元)</div>
+                            <div id="q01-value" class="var-content">OFF</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">T0 (計時器)</div>
+                            <div id="t0-value" class="var-content">0.0s</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">T1 (計時器)</div>
+                            <div id="t1-value" class="var-content">0.0s</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">C0 (計數器)</div>
+                            <div id="c0-value" class="var-content">0</div>
+                        </div>
+                        <div class="variable-card">
+                            <div class="var-title">C1 (計數器)</div>
+                            <div id="c1-value" class="var-content">0</div>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- 操作按鈕 -->
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 15px;">
-                    <button class="plc-btn function" id="toggle-input-btn" style="font-size: 0.85rem; padding: 10px 3px;">
-                        <i class="fas fa-toggle-on"></i> 輸入
+                <div class="action-buttons">
+                    <button class="plc-btn function" id="update-all-btn">
+                        <i class="fas fa-sync"></i> 更新所有變數
                     </button>
-                    <button class="plc-btn function" id="inc-counter-btn" style="font-size: 0.85rem; padding: 10px 3px;">
-                        <i class="fas fa-plus"></i> 計數
+                    <button class="plc-btn function" id="clear-vars-btn">
+                        <i class="fas fa-trash"></i> 清除變數
                     </button>
-                    <button class="plc-btn function" id="update-vars-btn" style="font-size: 0.85rem; padding: 10px 3px; grid-column: span 2;">
-                        <i class="fas fa-sync"></i> 更新變數
+                    <button class="plc-btn function" id="toggle-input-btn">
+                        <i class="fas fa-toggle-on"></i> 切換輸入
+                    </button>
+                    <button class="plc-btn function" id="inc-counter-btn">
+                        <i class="fas fa-plus-circle"></i> 計數器+1
                     </button>
                 </div>
             </div>
@@ -577,7 +674,7 @@
     </div>
 
     <script>
-        // 計算機狀態
+        // ========== 計算機核心變數 ==========
         let displayValue = '0';
         let firstOperand = null;
         let operator = null;
@@ -585,14 +682,34 @@
         let memoryValue = 0;
         let isDecimal = false;
         
-        // PLC 變數
-        let mw100 = 0;
-        let md104 = 0.0;
-        let inputBit = false;
-        let outputBit = false;
-        let counterValue = 0;
+        // ========== PLC 變數定義 ==========
+        // MW 變數 (記憶體字 - 16位元整數)
+        let mw10 = 0;    // 常用暫存變數
+        let mw20 = 0;    // 計算暫存
+        let mw50 = 0;    // 參數儲存
+        let mw100 = 0;   // 主變數
+        let mw200 = 0;   // 計數暫存
         
-        // DOM 元素
+        // MD 變數 (記憶體雙字 - 32位元實數)
+        let md30 = 0.0;  // 實數變數1
+        let md40 = 0.0;  // 實數變數2
+        
+        // 資料區塊變數
+        let db1 = 0;     // DB1.DBW0
+        
+        // 輸入輸出位元
+        let i00 = false; // I0.0
+        let i01 = false; // I0.1
+        let q00 = false; // Q0.0
+        let q01 = false; // Q0.1
+        
+        // 計時器與計數器
+        let t0 = 0.0;    // 計時器0
+        let t1 = 0.0;    // 計時器1
+        let c0 = 0;      // 計數器0
+        let c1 = 0;      // 計數器1
+        
+        // ========== DOM 元素 ==========
         const display = document.getElementById('display');
         const calcMode = document.getElementById('calc-mode');
         const dataTypeIndicator = document.getElementById('data-type-indicator');
@@ -604,25 +721,38 @@
         const intValue = document.getElementById('int-value');
         const dintValue = document.getElementById('dint-value');
         const realValue = document.getElementById('real-value');
+        const wordValue = document.getElementById('word-value');
+        const dwordValue = document.getElementById('dword-value');
         const hexValue = document.getElementById('hex-value');
         const binValue = document.getElementById('bin-value');
-        const wordValue = document.getElementById('word-value');
+        const bcdValue = document.getElementById('bcd-value');
         
         // PLC 變數顯示元素
+        const mw10Value = document.getElementById('mw10-value');
+        const mw20Value = document.getElementById('mw20-value');
+        const mw50Value = document.getElementById('mw50-value');
         const mw100Value = document.getElementById('mw100-value');
-        const md104Value = document.getElementById('md104-value');
-        const inputValue = document.getElementById('input-value');
-        const outputValue = document.getElementById('output-value');
-        const counterValueElement = document.getElementById('counter-value');
+        const md30Value = document.getElementById('md30-value');
+        const md40Value = document.getElementById('md40-value');
+        const mw200Value = document.getElementById('mw200-value');
+        const db1Value = document.getElementById('db1-value');
+        const i00Value = document.getElementById('i00-value');
+        const q00Value = document.getElementById('q00-value');
+        const i01Value = document.getElementById('i01-value');
+        const q01Value = document.getElementById('q01-value');
+        const t0Value = document.getElementById('t0-value');
+        const t1Value = document.getElementById('t1-value');
+        const c0Value = document.getElementById('c0-value');
+        const c1Value = document.getElementById('c1-value');
         
-        // 初始化
+        // ========== 初始化函數 ==========
         function init() {
             updateDisplay();
             setupEventListeners();
             startPLCSimulation();
         }
         
-        // 設定事件監聽器
+        // ========== 事件監聽器設定 ==========
         function setupEventListeners() {
             // 數字按鈕
             document.querySelectorAll('[data-number]').forEach(button => {
@@ -655,37 +785,16 @@
             });
             
             // PLC 功能按鈕
+            document.getElementById('update-all-btn').addEventListener('click', updateAllPLCVariables);
+            document.getElementById('clear-vars-btn').addEventListener('click', clearAllPLCVariables);
             document.getElementById('toggle-input-btn').addEventListener('click', toggleInputBit);
             document.getElementById('inc-counter-btn').addEventListener('click', incrementCounter);
-            document.getElementById('update-vars-btn').addEventListener('click', updatePLCVariablesFromDisplay);
             
             // 手機觸控優化
             document.addEventListener('touchstart', function() {}, {passive: true});
-            
-            // 防止滾動
-            document.addEventListener('touchmove', function(e) {
-                if (e.target.classList.contains('plc-btn') || e.target.classList.contains('tab')) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
         }
         
-        // 切換標籤
-        function switchTab(tabId) {
-            // 更新標籤狀態
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-            
-            // 更新面板顯示
-            document.querySelectorAll('.panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            document.getElementById(`${tabId}-panel`).classList.add('active');
-        }
-        
-        // 輸入數字
+        // ========== 計算機功能 ==========
         function inputDigit(digit) {
             if (waitingForSecondOperand) {
                 displayValue = digit;
@@ -695,21 +804,16 @@
                 if (displayValue === '0' && digit !== '.') {
                     displayValue = digit;
                 } else {
-                    // 限制長度
                     if (displayValue.length < 12) {
                         displayValue += digit;
                     }
                 }
             }
             
-            updatePLCVariables();
             updateDisplay();
-            
-            // 視覺反饋
             showButtonFeedback();
         }
         
-        // 處理運算符
         function handleOperator(nextOperator) {
             const inputValue = parseFloat(displayValue);
             
@@ -724,7 +828,6 @@
                 const result = performCalculation();
                 displayValue = `${parseFloat(result.toFixed(6))}`;
                 firstOperand = parseFloat(displayValue);
-                updatePLCVariables();
             }
             
             waitingForSecondOperand = true;
@@ -735,7 +838,6 @@
             updateDisplay();
         }
         
-        // 執行計算
         function performCalculation() {
             const inputValue = parseFloat(displayValue);
             
@@ -750,7 +852,7 @@
                     return firstOperand * inputValue;
                 case '/':
                     if (inputValue === 0) {
-                        showToast("錯誤: 除數不能為零!", "error");
+                        showToast("PLC錯誤: 除數不能為零!", "error");
                         return firstOperand;
                     }
                     return firstOperand / inputValue;
@@ -759,7 +861,6 @@
             }
         }
         
-        // 處理功能動作
         function handleAction(action) {
             switch (action) {
                 case 'decimal':
@@ -777,8 +878,8 @@
                     firstOperand = null;
                     waitingForSecondOperand = false;
                     isDecimal = displayValue.includes('.');
-                    calcMode.textContent = "結果";
-                    updatePLCVariables();
+                    calcMode.textContent = "計算結果";
+                    updateAllPLCVariables();
                     updateDisplay();
                     break;
                     
@@ -789,37 +890,37 @@
                 case 'add':
                     handleOperator('+');
                     calcMode.textContent = "ADD 指令";
-                    showToast("PLC加法指令", "info");
+                    showToast("PLC加法指令執行", "info");
                     break;
                     
                 case 'sub':
                     handleOperator('-');
                     calcMode.textContent = "SUB 指令";
-                    showToast("PLC減法指令", "info");
+                    showToast("PLC減法指令執行", "info");
                     break;
                     
                 case 'mul':
                     handleOperator('*');
                     calcMode.textContent = "MUL 指令";
-                    showToast("PLC乘法指令", "info");
+                    showToast("PLC乘法指令執行", "info");
                     break;
                     
                 case 'div':
                     handleOperator('/');
                     calcMode.textContent = "DIV 指令";
-                    showToast("PLC除法指令", "info");
+                    showToast("PLC除法指令執行", "info");
                     break;
                     
                 case 'memory-store':
                     memoryValue = parseFloat(displayValue);
-                    showToast(`已儲存: ${memoryValue}`, "success");
+                    showToast(`已儲存 ${memoryValue} 到記憶體`, "success");
                     break;
                     
                 case 'memory-recall':
                     displayValue = memoryValue.toString();
                     isDecimal = displayValue.includes('.');
                     updateDisplay();
-                    showToast(`讀取: ${memoryValue}`, "info");
+                    showToast(`從記憶體讀取 ${memoryValue}`, "info");
                     break;
                     
                 case 'memory-clear':
@@ -829,7 +930,6 @@
             }
         }
         
-        // 清除當前輸入
         function clearCurrentInput() {
             displayValue = '0';
             isDecimal = false;
@@ -837,12 +937,22 @@
             updateDisplay();
         }
         
-        // 更新顯示
+        // ========== 顯示更新函數 ==========
         function updateDisplay() {
             // 更新主顯示器
             display.textContent = displayValue;
             
             // 更新數據類型指示器
+            updateDataTypeIndicator();
+            
+            // 更新各數據類型顯示
+            updateDataTypeDisplays();
+            
+            // 更新PLC變數顯示
+            updatePLCVariableDisplays();
+        }
+        
+        function updateDataTypeIndicator() {
             const numValue = parseFloat(displayValue);
             const intNum = Math.round(numValue);
             
@@ -855,16 +965,12 @@
             } else {
                 dataTypeIndicator.textContent = "BYTE";
             }
-            
-            // 更新各數據類型顯示
-            updateDataTypeDisplays(numValue, intNum);
-            
-            // 更新PLC變數顯示
-            updatePLCVariableDisplays();
         }
         
-        // 更新數據類型顯示
-        function updateDataTypeDisplays(numValue, intNum) {
+        function updateDataTypeDisplays() {
+            const numValue = parseFloat(displayValue);
+            const intNum = Math.round(numValue);
+            
             // BOOL
             boolValue.textContent = intNum !== 0 ? "TRUE" : "FALSE";
             
@@ -882,6 +988,12 @@
             // REAL
             realValue.textContent = numValue.toFixed(4);
             
+            // WORD (無符號)
+            wordValue.textContent = intNum & 0xFFFF;
+            
+            // DWORD (無符號)
+            dwordValue.textContent = intNum >>> 0;
+            
             // HEX
             const hexVal = (intNum >>> 0).toString(16).toUpperCase();
             hexValue.textContent = "0x" + hexVal.padStart(4, '0');
@@ -890,70 +1002,133 @@
             const binVal = (intNum >>> 0).toString(2);
             binValue.textContent = binVal.padStart(8, '0').substr(-8);
             
-            // WORD
-            wordValue.textContent = intNum & 0xFFFF;
+            // BCD (簡單模擬)
+            const bcdStr = Math.abs(intNum).toString().padStart(4, '0');
+            bcdValue.textContent = bcdStr;
         }
         
-        // 更新PLC變數
-        function updatePLCVariables() {
+        // ========== PLC 變數功能 ==========
+        function updateAllPLCVariables() {
             const currentValue = parseFloat(displayValue);
+            const intValue = Math.round(currentValue);
             
-            mw100 = Math.round(currentValue);
-            md104 = currentValue;
-            inputBit = currentValue > 0;
-            outputBit = currentValue > 100;
+            // 更新 MW 變數 (不同公式模擬不同用途)
+            mw10 = intValue;                    // 直接值
+            mw20 = intValue * 2;                // 兩倍值
+            mw50 = intValue + 50;               // 偏移值
+            mw100 = intValue * 10;              // 十倍值
+            mw200 = intValue * 20;              // 二十倍值
+            
+            // 更新 MD 變數 (實數)
+            md30 = currentValue;                // 直接值
+            md40 = currentValue / 2.0;          // 一半值
+            
+            // 更新資料區塊
+            db1 = intValue * 5;
+            
+            // 更新輸入輸出位元
+            i00 = currentValue > 0;
+            q00 = currentValue > 50;
+            i01 = currentValue > 100;
+            q01 = currentValue > 150;
+            
+            updatePLCVariableDisplays();
+            showToast("所有PLC變數已更新", "success");
         }
         
-        // 更新PLC變數顯示
         function updatePLCVariableDisplays() {
+            mw10Value.textContent = mw10;
+            mw20Value.textContent = mw20;
+            mw50Value.textContent = mw50;
             mw100Value.textContent = mw100;
-            md104Value.textContent = md104.toFixed(2);
-            inputValue.textContent = inputBit ? "ON" : "OFF";
-            outputValue.textContent = outputBit ? "ON" : "OFF";
-            counterValueElement.textContent = counterValue;
+            md30Value.textContent = md30.toFixed(2);
+            md40Value.textContent = md40.toFixed(2);
+            mw200Value.textContent = mw200;
+            db1Value.textContent = db1;
+            
+            i00Value.textContent = i00 ? "ON" : "OFF";
+            q00Value.textContent = q00 ? "ON" : "OFF";
+            i01Value.textContent = i01 ? "ON" : "OFF";
+            q01Value.textContent = q01 ? "ON" : "OFF";
+            
+            t0Value.textContent = t0.toFixed(1) + "s";
+            t1Value.textContent = t1.toFixed(1) + "s";
+            c0Value.textContent = c0;
+            c1Value.textContent = c1;
         }
         
-        // 從顯示器更新PLC變數
-        function updatePLCVariablesFromDisplay() {
-            updatePLCVariables();
+        function clearAllPLCVariables() {
+            // 重置所有PLC變數
+            mw10 = mw20 = mw50 = mw100 = mw200 = 0;
+            md30 = md40 = 0.0;
+            db1 = 0;
+            i00 = i01 = q00 = q01 = false;
+            t0 = t1 = 0.0;
+            c0 = c1 = 0;
+            
             updatePLCVariableDisplays();
-            showToast("變數已更新", "success");
+            showToast("所有PLC變數已清除", "info");
         }
         
-        // PLC 功能
         function toggleInputBit() {
-            inputBit = !inputBit;
+            i00 = !i00;
             updatePLCVariableDisplays();
-            showToast(`輸入: ${inputBit ? "ON" : "OFF"}`, "info");
+            showToast(`輸入 I0.0: ${i00 ? "ON" : "OFF"}`, "info");
         }
         
         function incrementCounter() {
-            counterValue++;
+            c0++;
             updatePLCVariableDisplays();
-            showToast(`計數: ${counterValue}`, "info");
+            showToast(`計數器 C0: ${c0}`, "info");
         }
         
-        // PLC模擬
+        // ========== PLC 模擬功能 ==========
         function startPLCSimulation() {
             // 更新掃描時間
             setInterval(() => {
                 const scanTime = 5 + Math.floor(Math.random() * 15);
                 scanTimeElement.textContent = `${scanTime}ms`;
             }, 1500);
+            
+            // 更新計時器
+            setInterval(() => {
+                t0 += 0.1;
+                t1 += 0.05;
+                updatePLCVariableDisplays();
+            }, 100);
+            
+            // 隨機切換輸入
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    i01 = !i01;
+                    updatePLCVariableDisplays();
+                }
+            }, 3000);
         }
         
-        // 顯示提示
+        // ========== 輔助功能 ==========
+        function switchTab(tabId) {
+            // 更新標籤狀態
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // 更新面板顯示
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-panel`).classList.add('active');
+        }
+        
         function showToast(message, type) {
-            // 移除現有提示
             const existingToast = document.querySelector('.toast-message');
             if (existingToast) existingToast.remove();
             
-            // 建立新提示
             const toast = document.createElement('div');
             toast.className = 'toast-message';
             toast.textContent = message;
             
-            // 設定樣式
             const colors = {
                 info: '#2196f3',
                 success: '#4caf50',
@@ -981,14 +1156,13 @@
             
             document.body.appendChild(toast);
             
-            // 自動移除
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.remove();
                 }
             }, 2000);
             
-            // 定義動畫
+            // 動畫樣式
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes slideDown {
@@ -1003,7 +1177,6 @@
             document.head.appendChild(style);
         }
         
-        // 按鈕反饋效果
         function showButtonFeedback() {
             display.style.transform = 'scale(0.98)';
             setTimeout(() => {
@@ -1011,7 +1184,6 @@
             }, 100);
         }
         
-        // 取得運算符名稱
         function getOperatorName(op) {
             const names = {
                 '+': '加法',
@@ -1022,7 +1194,7 @@
             return names[op] || '計算';
         }
         
-        // 初始化
+        // ========== 初始化 ==========
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
