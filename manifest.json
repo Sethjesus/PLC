@@ -1,0 +1,41 @@
+{
+  "name": "邏輯閘計算機",
+  "short_name": "邏輯閘計算機",
+  "description": "手機友善的邏輯閘計算與教學應用程式",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#1a2980",
+  "theme_color": "#1a2980",
+  "orientation": "portrait",
+  "scope": "./",
+  "lang": "zh-TW",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "shortcuts": [
+    {
+      "name": "開始計算",
+      "short_name": "計算",
+      "description": "開始邏輯計算",
+      "url": "./index.html"
+    },
+    {
+      "name": "邏輯閘教學",
+      "short_name": "教學",
+      "description": "學習邏輯閘知識",
+      "url": "./index.html#gates-tab"
+    }
+  ]
+}
