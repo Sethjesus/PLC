@@ -3,7 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>邏輯閘計算機 - 手機版</title>
+    
+    <!-- ========== PWA Meta Tags ========== -->
+    <meta name="theme-color" content="#1a2980">
+    <meta name="description" content="邏輯閘計算機 - 手機友善版 PWA，可離線使用，可安裝到桌面">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="邏輯閘計算機">
+    
+    <title>🧠 邏輯閘計算機 PWA</title>
+    
+    <!-- ========== PWA Manifest ========== -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- ========== Apple Touch Icons ========== -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png">
+    
+    <!-- ========== Favicon ========== -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icon-192.png">
+    
     <style>
         * {
             margin: 0;
@@ -19,11 +41,13 @@
             min-height: 100vh;
             padding: 15px;
             font-size: 16px;
+            -webkit-overflow-scrolling: touch;
         }
         
         .app-container {
             max-width: 100%;
             margin: 0 auto;
+            padding-bottom: 80px; /* 為安裝按鈕留空間 */
         }
         
         /* 標題區 */
@@ -52,6 +76,17 @@
             color: #666;
             font-size: 1rem;
             line-height: 1.4;
+        }
+        
+        .pwa-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: 600;
         }
         
         /* 手機標籤頁 */
@@ -395,6 +430,109 @@
             transform: scale(0.95);
         }
         
+        /* ========== PWA 專用樣式 ========== */
+        
+        /* 安裝提示按鈕 */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            animation: slideUp 0.3s ease;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .install-prompt.show {
+            display: flex;
+        }
+        
+        .install-icon {
+            font-size: 1.2rem;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 離線提示 */
+        .offline-notice {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            z-index: 1001;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 20px rgba(255, 107, 107, 0.3);
+        }
+        
+        .offline-notice.show {
+            display: flex;
+            animation: fadeInDown 0.3s ease;
+        }
+        
+        .offline-notice.online {
+            background: #00b894;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* PWA 功能卡片 */
+        .pwa-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .pwa-feature {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 10px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .pwa-feature-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        
         /* 手機操作提示 */
         .mobile-hint {
             position: fixed;
@@ -445,6 +583,10 @@
             h1 {
                 font-size: 1.6rem;
             }
+            
+            .pwa-features {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 360px) {
@@ -454,6 +596,12 @@
             
             .examples {
                 grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 500px;
             }
         }
         
@@ -485,18 +633,31 @@
     </style>
 </head>
 <body>
+    <!-- 離線提示 -->
+    <div class="offline-notice" id="offlineNotice">
+        <span>📡</span>
+        <span id="offlineText">離線模式中</span>
+    </div>
+    
+    <!-- 安裝提示按鈕 -->
+    <button class="install-prompt" id="installPrompt">
+        <span class="install-icon">📱</span>
+        <span>安裝應用程式</span>
+    </button>
+    
     <div class="app-container">
         <!-- 標題區 -->
         <div class="header">
-            <h1>🧠 邏輯閘計算機</h1>
+            <h1>🧠 邏輯閘計算機 PWA</h1>
             <div class="subtitle">手機友善版 • 點擊學習 • 即時計算</div>
+            <div class="pwa-badge">📱 PWA 應用程式</div>
         </div>
         
         <!-- 手機標籤頁 -->
         <div class="mobile-tabs">
             <div class="tab active" data-tab="calculator">計算機</div>
             <div class="tab" data-tab="gates">邏輯閘教學</div>
-            <div class="tab" data-tab="examples">範例</div>
+            <div class="tab" data-tab="pwa">PWA 功能</div>
         </div>
         
         <!-- 計算機標籤頁 -->
@@ -730,31 +891,51 @@
             </div>
         </div>
         
-        <!-- 範例標籤頁 -->
-        <div class="tab-content" id="examples-tab">
+        <!-- PWA 功能標籤頁 -->
+        <div class="tab-content" id="pwa-tab">
             <div class="gate-card">
-                <h3 style="color: #1a2980; margin-bottom: 20px; text-align: center;">點擊範例自動載入</h3>
-                
-                <div class="examples">
-                    <button class="example-btn" data-expr="A AND B">A AND B</button>
-                    <button class="example-btn" data-expr="A OR B">A OR B</button>
-                    <button class="example-btn" data-expr="NOT A">NOT A</button>
-                    <button class="example-btn" data-expr="A XOR B">A XOR B</button>
-                    <button class="example-btn" data-expr="A NAND B">A NAND B</button>
-                    <button class="example-btn" data-expr="A NOR B">A NOR B</button>
-                    <button class="example-btn" data-expr="(A AND B) OR C">組合1</button>
-                    <button class="example-btn" data-expr="NOT (A OR B)">組合2</button>
+                <div class="gate-header">
+                    <div class="gate-title">📱 PWA 功能介紹</div>
+                    <div class="gate-symbol">✨</div>
                 </div>
                 
-                <div style="margin-top: 25px; padding: 20px; background: #f0f7ff; border-radius: 15px;">
-                    <h4 style="color: #1a2980; margin-bottom: 10px;">學習挑戰</h4>
-                    <ol style="color: #555; line-height: 1.8; padding-left: 20px;">
-                        <li>嘗試只用 NOR 閘實現 NOT 功能</li>
-                        <li>用兩個 NOR 閘實現 AND 功能</li>
-                        <li>觀察 XOR 與其他閘的真值表差異</li>
-                        <li>建立 (A AND B) OR (NOT A) 並測試所有輸入</li>
+                <div class="gate-desc" style="text-align: center; margin-bottom: 25px;">
+                    <strong>漸進式網頁應用程式</strong><br>
+                    可安裝到手機桌面，像原生應用一樣使用
+                </div>
+                
+                <div class="pwa-features">
+                    <div class="pwa-feature">
+                        <div class="pwa-feature-icon">📱</div>
+                        <div>安裝到桌面</div>
+                    </div>
+                    <div class="pwa-feature">
+                        <div class="pwa-feature-icon">📶</div>
+                        <div>離線使用</div>
+                    </div>
+                    <div class="pwa-feature">
+                        <div class="pwa-feature-icon">⚡</div>
+                        <div>快速載入</div>
+                    </div>
+                    <div class="pwa-feature">
+                        <div class="pwa-feature-icon">🔄</div>
+                        <div>自動更新</div>
+                    </div>
+                </div>
+                
+                <div class="gate-desc" style="margin-top: 25px;">
+                    <h4 style="color: #1a2980; margin-bottom: 10px;">安裝方法：</h4>
+                    <ol style="line-height: 1.8; padding-left: 20px;">
+                        <li>點擊右上角「安裝應用程式」按鈕</li>
+                        <li>或使用瀏覽器選單中的「安裝」選項</li>
+                        <li>安裝後會出現在手機桌面</li>
+                        <li>可離線使用，自動更新</li>
                     </ol>
                 </div>
+                
+                <button class="btn btn-equals" style="margin-top: 20px;" id="checkPWA">
+                    檢查 PWA 狀態
+                </button>
             </div>
         </div>
         
@@ -768,6 +949,113 @@
     </div>
 
     <script>
+        // ========== PWA 功能 ==========
+        
+        // PWA 安裝提示
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const offlineNotice = document.getElementById('offlineNotice');
+        const offlineText = document.getElementById('offlineText');
+        
+        // 檢測安裝提示
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // 顯示安裝按鈕（延遲顯示）
+            setTimeout(() => {
+                installPrompt.classList.add('show');
+            }, 3000);
+            
+            // 點擊安裝按鈕
+            installPrompt.addEventListener('click', async () => {
+                installPrompt.classList.remove('show');
+                
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        showHint('✅ 已成功安裝到桌面', 3000);
+                    }
+                    deferredPrompt = null;
+                }
+            });
+        });
+        
+        // 檢測應用是否已安裝
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA已安裝');
+            installPrompt.classList.remove('show');
+        });
+        
+        // 離線/上線檢測
+        window.addEventListener('offline', () => {
+            offlineNotice.classList.add('show');
+            offlineText.textContent = '📶 離線模式中';
+            showHint('已切換到離線模式', 2000);
+        });
+        
+        window.addEventListener('online', () => {
+            offlineNotice.classList.remove('show');
+            setTimeout(() => {
+                offlineNotice.classList.add('show');
+                offlineNotice.classList.add('online');
+                offlineText.textContent = '✅ 已恢復連線';
+                setTimeout(() => {
+                    offlineNotice.classList.remove('show');
+                    offlineNotice.classList.remove('online');
+                }, 3000);
+            }, 100);
+        });
+        
+        // 初始化檢查網路狀態
+        if (!navigator.onLine) {
+            offlineNotice.classList.add('show');
+            offlineText.textContent = '📶 離線模式中';
+        }
+        
+        // Service Worker 註冊
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker 註冊成功:', registration.scope);
+                        
+                        // 檢查更新
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            console.log('🔄 找到新版本 Service Worker');
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    showHint('🔄 有新版本可用，重新整理頁面更新', 5000);
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => {
+                        console.log('❌ Service Worker 註冊失敗:', err);
+                    });
+            });
+        }
+        
+        // 檢查 PWA 狀態按鈕
+        document.getElementById('checkPWA').addEventListener('click', () => {
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone;
+            
+            let message = '📱 PWA 狀態檢查：\n';
+            message += `• 安裝狀態: ${isPWA ? '✅ 已安裝' : '📱 可安裝'}\n`;
+            message += `• 離線支援: ${'serviceWorker' in navigator ? '✅ 支援' : '❌ 不支援'}\n`;
+            message += `• 網路狀態: ${navigator.onLine ? '✅ 在線' : '📶 離線'}\n`;
+            message += `• 儲存空間: ${'storage' in navigator ? '✅ 可用' : '❌ 不可用'}`;
+            
+            alert(message);
+        });
+        
+        // ========== 應用程式邏輯 ==========
+        
         // 邏輯閘函數
         const logicFunctions = {
             'NOT': (a, b) => a === 1 ? 0 : 1,
@@ -792,7 +1080,24 @@
             initGateCards();
             updateDisplay();
             showHint('點擊切換輸入值 A 和 B', 3000);
+            
+            // 檢查是否為PWA模式
+            checkPWAMode();
         });
+        
+        // 檢查是否以PWA模式運行
+        function checkPWAMode() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                               window.navigator.standalone;
+            
+            if (isStandalone) {
+                document.querySelector('.pwa-badge').textContent = '✅ 已安裝為應用程式';
+                document.querySelector('.pwa-badge').style.background = 'linear-gradient(135deg, #00b09b 0%, #96c93d 100%)';
+                
+                // 隱藏安裝按鈕
+                installPrompt.style.display = 'none';
+            }
+        }
         
         // 初始化手機標籤頁
         function initMobileTabs() {
@@ -817,6 +1122,8 @@
                         showHint('點擊按鈕建立邏輯表達式', 2000);
                     } else if (tabId === 'gates') {
                         showHint('點擊邏輯閘卡片查看詳細說明', 2000);
+                    } else if (tabId === 'pwa') {
+                        showHint('了解PWA功能與安裝方法', 2000);
                     }
                 });
             });
@@ -851,20 +1158,6 @@
                     handleKeyPress(key);
                     btn.classList.add('pulse');
                     setTimeout(() => btn.classList.remove('pulse'), 300);
-                });
-            });
-            
-            // 範例按鈕
-            document.querySelectorAll('.example-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const expr = btn.dataset.expr;
-                    currentExpression = expr;
-                    updateDisplay();
-                    calculate();
-                    
-                    // 切換到計算機標籤頁
-                    document.querySelector('[data-tab="calculator"]').click();
-                    showHint(`已載入範例: ${expr}`, 2000);
                 });
             });
         }
@@ -1018,18 +1311,6 @@
                 }
             }
             
-            // 簡單組合表達式
-            if (expr === '(A AND B) OR C') {
-                const andResult = logicFunctions.AND(variables.A, variables.B);
-                // 假設 C = 0
-                return logicFunctions.OR(andResult, 0);
-            }
-            
-            if (expr === 'NOT (A OR B)') {
-                const orResult = logicFunctions.OR(variables.A, variables.B);
-                return logicFunctions.NOT(orResult, 0);
-            }
-            
             return 0;
         }
         
@@ -1082,8 +1363,6 @@
         
         // 顯示手機提示
         function showHint(message, duration = 3000) {
-            if (!isMobile) return;
-            
             const hint = document.getElementById('mobileHint');
             const hintMessage = document.getElementById('hintMessage');
             
