@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PLC 模擬系統 - 完整音效版</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --plc-blue: #0066b3;
+            --plc-green: #4caf50;
+            --plc-red: #f44336;
+            --plc-yellow: #ffeb3b;
+            --plc-orange: #ff9800;
+            --plc-dark: #1a252f;
+            --plc-gray: #546e7a;
+            --plc-light: #eceff1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: var(--plc-light);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 主容器 */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 10px;
+            gap: 10px;
+        }
+        
+        /* 標題區 */
+        .header {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 2px solid var(--plc-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .title {
+            font-size: 1.3rem;
+            color: var(--plc-yellow);
+            font-weight: bold;
+        }
+        
+        .sound-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sound-btn {
+            background: var(--plc-gray);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* 控制面板 */
+        .control-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid var(--plc-blue);
+            flex-shrink: 0;
+        }
+        
+        /* PLC 狀態 */
+        .plc-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--plc-blue);
+        }
+        
+        .plc-title {
+            font-size: 1.2rem;
+            color: var(--plc-yellow);
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--plc-green);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .led.error {
+            background-color: var(--plc-red);
+            animation: blink 0.5s infinite;
+        }
+        
+        .led.warning {
+            background-color: var(--plc-orange);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+        
+        /* I/O 控制區 */
+        .io-control-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .io-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid var(--plc-gray);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .io-item.active {
+            border-color: var(--plc-green);
+            background: rgba(76, 175, 80, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .io-label {
+            font-size: 0.8rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+        
+        .io-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .io-value.on {
+            color: var(--plc-green);
+        }
+        
+        .io-value.off {
+            color: var(--plc-red);
+        }
+        
+        /* 控制按鈕 */
+        .button-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: var(--plc-blue);
+            border: none;
+            color: white;
+            padding: 12px 8px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .control-btn:active {
+            transform: translateY(3px);
+        }
+        
+        .control-btn.start {
+            background: var(--plc-green);
+        }
+        
+        .control-btn.stop {
+            background: var(--plc-red);
+        }
+        
+        .control-btn.reset {
+            background: var(--plc-orange);
+        }
+        
+        /* 模擬區 */
+        .simulation-area {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 2px solid var(--plc-gray);
+        }
+        
+        .simulation-title {
+            color: var(--plc-yellow);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--plc-gray);
+        }
+        
+        /* 生產線視覺化 */
+        .production-line {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .station {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid var(--plc-gray);
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .station.active {
+            border-color: var(--plc-green);
+            background: rgba(76, 175, 80, 0.15);
+            box-shadow: 0 5px 20px rgba(76, 175, 80, 0.2);
+        }
+        
+        .station.error {
+            border-color: var(--plc-red);
+            background: rgba(244, 67, 54, 0.15);
+            box-shadow: 0 5px 20px rgba(244, 67, 54, 0.2);
+        }
+        
+        .station-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .station-name {
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--plc-yellow);
+        }
+        
+        .station-status {
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .status-running {
+            background: var(--plc-green);
+            color: white;
+        }
+        
+        .status-stopped {
+            background: var(--plc-red);
+            color: white;
+        }
+        
+        .status-waiting {
+            background: var(--plc-orange);
+            color: white;
+        }
+        
+        .station-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .detail-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-size: 0.95rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        /* 輸送帶動畫 */
+        .conveyor {
+            height: 6px;
+            background: linear-gradient(90deg, #666, #888, #666);
+            border-radius: 3px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .conveyor::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: conveyorMove 2s linear infinite;
+        }
+        
+        .conveyor.running::after {
+            animation-play-state: running;
+        }
+        
+        .conveyor.stopped::after {
+            animation-play-state: paused;
+        }
+        
+        @keyframes conveyorMove {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        /* 產品動畫 */
+        .product {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 2;
+        }
+        
+        .product.moving {
+            display: block;
+            animation: productMove 3s linear forwards;
+        }
+        
+        @keyframes productMove {
+            0% { left: -50px; }
+            100% { left: calc(100% - 30px); }
+        }
+        
+        /* 數據監控區 */
+        .monitoring-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid var(--plc-gray);
+            flex-shrink: 0;
+        }
+        
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .monitor-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .monitor-label {
+            font-size: 0.75rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        
+        .monitor-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: var(--plc-green);
+        }
+        
+        /* 音效控制面板 */
+        .sound-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px solid var(--plc-purple);
+        }
+        
+        .sound-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .sound-slider {
+            flex: 1;
+            min-width: 100px;
+        }
+        
+        .sound-label {
+            font-size: 0.8rem;
+            color: #ccc;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--plc-gray);
+            outline: none;
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .io-control-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .monitoring-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .station-details {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (orientation: landscape) {
+            .main-container {
+                flex-direction: row;
+            }
+            
+            .control-panel {
+                width: 40%;
+            }
+            
+            .simulation-area {
+                width: 60%;
+            }
+            
+            .production-line {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .station {
+                flex: 1;
+                min-width: 45%;
+            }
+        }
+        
+        /* 警告訊息 */
+        .alert-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--plc-red);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s, fadeOut 0.3s 2.7s forwards;
+            max-width: 300px;
+        }
+        
+        @keyframes slideIn {
+            from { right: -320px; }
+            to { right: 20px; }
+        }
+        
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        
+        /* 音效指示器 */
+        .sound-indicator {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--plc-green);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: none;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <!-- 標題區 -->
+            <div class="header">
+                <div class="title">
+                    <i class="fas fa-industry"></i>
+                    PLC 模擬控制系統
+                </div>
+                <div class="sound-control">
+                    <button class="sound-btn" id="btn-mute">
+                        <i class="fas fa-volume-up"></i> 靜音
+                    </button>
+                    <button class="sound-btn" id="btn-test-sound">
+                        <i class="fas fa-music"></i> 測試音效
+                    </button>
+                </div>
+            </div>
+            
+            <!-- PLC 狀態 -->
+            <div class="plc-status">
+                <div class="plc-title">PLC 控制面板</div>
+                <div class="status-indicator">
+                    <div class="led" id="plc-led"></div>
+                    <span id="plc-status-text">停止中</span>
+                    <span id="scan-time">掃描: 15ms</span>
+                </div>
+            </div>
+            
+            <!-- I/O 控制區 -->
+            <div class="io-control-section">
+                <div class="io-item" id="io-i0">
+                    <div class="io-label">啟動按鈕 I0.0</div>
+                    <div class="io-value off" id="i0-value">OFF</div>
+                </div>
+                <div class="io-item" id="io-i1">
+                    <div class="io-label">急停按鈕 I0.1</div>
+                    <div class="io-value off" id="i1-value">OFF</div>
+                </div>
+                <div class="io-item" id="io-q0">
+                    <div class="io-label">主馬達 Q0.0</div>
+                    <div class="io-value off" id="q0-value">OFF</div>
+                </div>
+                <div class="io-item" id="io-q1">
+                    <div class="io-label">警示燈 Q0.1</div>
+                    <div class="io-value off" id="q1-value">OFF</div>
+                </div>
+            </div>
+            
+            <!-- 控制按鈕 -->
+            <div class="button-section">
+                <button class="control-btn start" id="btn-start">
+                    <i class="fas fa-play"></i> 啟動
+                </button>
+                <button class="control-btn stop" id="btn-stop">
+                    <i class="fas fa-stop"></i> 停止
+                </button>
+                <button class="control-btn reset" id="btn-reset">
+                    <i class="fas fa-redo"></i> 重置
+                </button>
+                <button class="control-btn" id="btn-auto">
+                    <i class="fas fa-robot"></i> 自動
+                </button>
+                <button class="control-btn" id="btn-manual">
+                    <i class="fas fa-hand-paper"></i> 手動
+                </button>
+                <button class="control-btn" id="btn-emergency">
+                    <i class="fas fa-exclamation-triangle"></i> 急停
+                </button>
+            </div>
+            
+            <!-- 音效控制 -->
+            <div class="sound-panel">
+                <div class="sound-controls">
+                    <div class="sound-slider">
+                        <div class="sound-label">
+                            <span>主音量</span>
+                            <span id="master-volume-value">70%</span>
+                        </div>
+                        <input type="range" id="master-volume" min="0" max="100" value="70">
+                    </div>
+                    <div class="sound-slider">
+                        <div class="sound-label">
+                            <span>機械音</span>
+                            <span id="mech-volume-value">80%</span>
+                        </div>
+                        <input type="range" id="mech-volume" min="0" max="100" value="80">
+                    </div>
+                    <div class="sound-slider">
+                        <div class="sound-label">
+                            <span>警示音</span>
+                            <span id="alert-volume-value">100%</span>
+                        </div>
+                        <input type="range" id="alert-volume" min="0" max="100" value="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 模擬區 -->
+        <div class="simulation-area">
+            <div class="simulation-title">
+                <i class="fas fa-conveyor-belt"></i>
+                生產線視覺化模擬
+            </div>
+            
+            <div class="production-line" id="production-line">
+                <!-- 站點1：上料站 -->
+                <div class="station" id="station1">
+                    <div class="station-header">
+                        <div class="station-name">上料站</div>
+                        <div class="station-status status-stopped" id="status1">停止</div>
+                    </div>
+                    <div class="conveyor stopped" id="conveyor1"></div>
+                    <div class="station-details">
+                        <div class="detail-item">
+                            <div class="detail-label">上料計數</div>
+                            <div class="detail-value" id="feed-count">0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">料位狀態</div>
+                            <div class="detail-value" id="feed-status">充足</div>
+                        </div>
+                    </div>
+                    <div class="product" id="product1"></div>
+                </div>
+                
+                <!-- 站點2：加工站 -->
+                <div class="station" id="station2">
+                    <div class="station-header">
+                        <div class="station-name">加工站</div>
+                        <div class="station-status status-stopped" id="status2">停止</div>
+                    </div>
+                    <div class="conveyor stopped" id="conveyor2"></div>
+                    <div class="station-details">
+                        <div class="detail-item">
+                            <div class="detail-label">加工計數</div>
+                            <div class="detail-value" id="process-count">0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">刀具壽命</div>
+                            <div class="detail-value" id="tool-life">100%</div>
+                        </div>
+                    </div>
+                    <div class="product" id="product2"></div>
+                </div>
+                
+                <!-- 站點3：檢測站 -->
+                <div class="station" id="station3">
+                    <div class="station-header">
+                        <div class="station-name">檢測站</div>
+                        <div class="station-status status-stopped" id="status3">停止</div>
+                    </div>
+                    <div class="conveyor stopped" id="conveyor3"></div>
+                    <div class="station-details">
+                        <div class="detail-item">
+                            <div class="detail-label">良品數量</div>
+                            <div class="detail-value" id="good-count">0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">不良數量</div>
+                            <div class="detail-value" id="bad-count">0</div>
+                        </div>
+                    </div>
+                    <div class="product" id="product3"></div>
+                </div>
+                
+                <!-- 站點4：下料站 -->
+                <div class="station" id="station4">
+                    <div class="station-header">
+                        <div class="station-name">下料站</div>
+                        <div class="station-status status-stopped" id="status4">停止</div>
+                    </div>
+                    <div class="conveyor stopped" id="conveyor4"></div>
+                    <div class="station-details">
+                        <div class="detail-item">
+                            <div class="detail-label">總產量</div>
+                            <div class="detail-value" id="total-count">0</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">良率</div>
+                            <div class="detail-value" id="yield-rate">0%</div>
+                        </div>
+                    </div>
+                    <div class="product" id="product4"></div>
+                </div>
+            </div>
+            
+            <!-- 數據監控區 -->
+            <div class="monitoring-panel">
+                <div class="monitoring-grid">
+                    <div class="monitor-item">
+                        <div class="monitor-label">PLC 掃描時間</div>
+                        <div class="monitor-value" id="monitor-scan">15ms</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">運行時間</div>
+                        <div class="monitor-value" id="monitor-runtime">0:00</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">生產速率</div>
+                        <div class="monitor-value" id="monitor-rate">0/min</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">系統負載</div>
+                        <div class="monitor-value" id="monitor-load">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 音效指示器 -->
+        <div class="sound-indicator" id="sound-indicator">
+            <i class="fas fa-volume-up"></i> 音效播放中...
+        </div>
+    </div>
+
+    <script>
+        // ========== 音效系統 ==========
+        class SoundSystem {
+            constructor() {
+                this.muted = false;
+                this.volumes = {
+                    master: 0.7,
+                    mechanical: 0.8,
+                    alert: 1.0
+                };
+                
+                // 音效緩存
+                this.sounds = {};
+                this.initSounds();
+                this.setupVolumeControls();
+            }
+            
+            initSounds() {
+                // 使用 Web Audio API 生成音效
+                this.sounds = {
+                    // 啟動音效
+                    start: this.createBeepSound(523.25, 0.1), // C5
+                    
+                    // 停止音效
+                    stop: this.createBeepSound(392.00, 0.1), // G4
+                    
+                    // 按鈕音效
+                    button: this.createClickSound(),
+                    
+                    // I/O 切換音效
+                    ioOn: this.createBeepSound(659.25, 0.05), // E5
+                    ioOff: this.createBeepSound(493.88, 0.05), // B4
+                    
+                    // 馬達啟動音效
+                    motorStart: this.createMotorStartSound(),
+                    
+                    // 輸送帶音效
+                    conveyor: this.createConveyorSound(),
+                    
+                    // 產品移動音效
+                    productMove: this.createProductMoveSound(),
+                    
+                    // 急停音效
+                    emergency: this.createEmergencySound(),
+                    
+                    // 警示音效
+                    warning: this.createWarningSound(),
+                    
+                    // 成功音效
+                    success: this.createSuccessSound(),
+                    
+                    // 錯誤音效
+                    error: this.createErrorSound(),
+                    
+                    // 完成音效
+                    complete: this.createCompleteSound()
+                };
+            }
+            
+            // 生成蜂鳴聲
+            createBeepSound(frequency, duration) {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = frequency;
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                        gainNode.gain.linearRampToValueAtTime(
+                            this.volumes.master * this.volumes.alert * 0.5, 
+                            audioContext.currentTime + 0.01
+                        );
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + duration);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 生成按鍵聲
+            createClickSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 1000;
+                        oscillator.type = 'square';
+                        
+                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                        gainNode.gain.linearRampToValueAtTime(
+                            this.volumes.master * 0.3, 
+                            audioContext.currentTime + 0.001
+                        );
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.05);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.05);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 馬達啟動音效
+            createMotorStartSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 100;
+                        oscillator.type = 'sawtooth';
+                        
+                        // 模擬馬達加速
+                        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                        gainNode.gain.linearRampToValueAtTime(
+                            this.volumes.master * this.volumes.mechanical * 0.4, 
+                            audioContext.currentTime + 0.5
+                        );
+                        
+                        oscillator.frequency.linearRampToValueAtTime(200, audioContext.currentTime + 0.5);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 輸送帶音效
+            createConveyorSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const noise = audioContext.createBufferSource();
+                        const buffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.5, audioContext.sampleRate);
+                        const data = buffer.getChannelData(0);
+                        
+                        // 生成噪音
+                        for (let i = 0; i < buffer.length; i++) {
+                            data[i] = Math.random() * 2 - 1;
+                        }
+                        
+                        const gainNode = audioContext.createGain();
+                        const filter = audioContext.createBiquadFilter();
+                        
+                        noise.buffer = buffer;
+                        noise.connect(filter);
+                        filter.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        filter.type = 'bandpass';
+                        filter.frequency.value = 500;
+                        filter.Q.value = 1;
+                        
+                        gainNode.gain.value = this.volumes.master * this.volumes.mechanical * 0.1;
+                        
+                        noise.start();
+                        noise.stop(audioContext.currentTime + 0.2);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 產品移動音效
+            createProductMoveSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 300;
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(this.volumes.master * 0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 急停音效
+            createEmergencySound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 800;
+                        oscillator.type = 'square';
+                        
+                        // 急促的警報聲
+                        let time = audioContext.currentTime;
+                        gainNode.gain.setValueAtTime(0, time);
+                        
+                        // 三次急促的蜂鳴
+                        for (let i = 0; i < 3; i++) {
+                            gainNode.gain.setValueAtTime(this.volumes.master * this.volumes.alert * 0.8, time + i * 0.2);
+                            gainNode.gain.setValueAtTime(0, time + i * 0.2 + 0.1);
+                        }
+                        
+                        oscillator.start(time);
+                        oscillator.stop(time + 0.6);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 警告音效
+            createWarningSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 600;
+                        oscillator.type = 'sawtooth';
+                        
+                        gainNode.gain.setValueAtTime(this.volumes.master * this.volumes.alert * 0.6, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 成功音效
+            createSuccessSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                        oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                        
+                        oscillator.type = 'sine';
+                        
+                        gainNode.gain.setValueAtTime(this.volumes.master * 0.5, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 錯誤音效
+            createErrorSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.value = 200;
+                        oscillator.type = 'square';
+                        
+                        gainNode.gain.setValueAtTime(this.volumes.master * this.volumes.alert * 0.7, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            // 完成音效
+            createCompleteSound() {
+                return () => {
+                    if (this.muted) return;
+                    
+                    try {
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime); // G5
+                        oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.2); // C6
+                        
+                        oscillator.type = 'triangle';
+                        
+                        gainNode.gain.setValueAtTime(this.volumes.master * 0.6, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.4);
+                        
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.4);
+                    } catch (e) {
+                        console.log('音效播放失敗:', e);
+                    }
+                };
+            }
+            
+            setupVolumeControls() {
+                const masterSlider = document.getElementById('master-volume');
+                const mechSlider = document.getElementById('mech-volume');
+                const alertSlider = document.getElementById('alert-volume');
+                
+                const masterValue = document.getElementById('master-volume-value');
+                const mechValue = document.getElementById('mech-volume-value');
+                const alertValue = document.getElementById('alert-volume-value');
+                
+                masterSlider.addEventListener('input', (e) => {
+                    this.volumes.master = e.target.value / 100;
+                    masterValue.textContent = `${e.target.value}%`;
+                });
+                
+                mechSlider.addEventListener('input', (e) => {
+                    this.volumes.mechanical = e.target.value / 100;
+                    mechValue.textContent = `${e.target.value}%`;
+                });
+                
+                alertSlider.addEventListener('input', (e) => {
+                    this.volumes.alert = e.target.value / 100;
+                    alertValue.textContent = `${e.target.value}%`;
+                });
+            }
+            
+            play(soundName) {
+                if (this.sounds[soundName]) {
+                    this.sounds[soundName]();
+                    this.showSoundIndicator(soundName);
+                }
+            }
+            
+            toggleMute() {
+                this.muted = !this.muted;
+                const muteBtn = document.getElementById('btn-mute');
+                muteBtn.innerHTML = this.muted ? 
+                    '<i class="fas fa-volume-mute"></i> 取消靜音' : 
+                    '<i class="fas fa-volume-up"></i> 靜音';
+                
+                this.play('button');
+            }
+            
+            showSoundIndicator(soundName) {
+                const indicator = document.getElementById('sound-indicator');
+                const soundNames = {
+                    'start': '系統啟動',
+                    'stop': '系統停止',
+                    'button': '按鈕點擊',
+                    'ioOn': '設備啟動',
+                    'ioOff': '設備停止',
+                    'motorStart': '馬達啟動',
+                    'conveyor': '輸送帶運轉',
+                    'productMove': '產品移動',
+                    'emergency': '急停警報',
+                    'warning': '警告提示',
+                    'success': '操作成功',
+                    'error': '操作錯誤',
+                    'complete': '任務完成'
+                };
+                
+                indicator.innerHTML = `<i class="fas fa-volume-up"></i> ${soundNames[soundName] || '音效'}`;
+                indicator.style.display = 'block';
+                
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        // ========== PLC 模擬系統 ==========
+        const soundSystem = new SoundSystem();
+        
+        // 系統狀態
+        let systemState = {
+            isRunning: false,
+            isEmergency: false,
+            mode: 'manual',
+            startTime: null,
+            runtime: 0,
+            scanCycle: 15,
+            conveyorSpeed: 1.0
+        };
+        
+        // I/O 狀態
+        let ioStatus = {
+            i0: false,
+            i1: false,
+            q0: false,
+            q1: false,
+            m0: false,
+            m1: false,
+            m2: false,
+            m3: false
+        };
+        
+        // 生產數據
+        let productionData = {
+            feedCount: 0,
+            processCount: 0,
+            goodCount: 0,
+            badCount: 0,
+            totalCount: 0,
+            toolLife: 100,
+            feedStock: 100,
+            lastUpdate: Date.now()
+        };
+        
+        // 產品動畫狀態
+        let productAnimations = {
+            station1: null,
+            station2: null,
+            station3: null,
+            station4: null
+        };
+        
+        // ========== DOM 元素 ==========
+        const plcLed = document.getElementById('plc-led');
+        const plcStatusText = document.getElementById('plc-status-text');
+        const scanTimeElement = document.getElementById('scan-time');
+        
+        // I/O 元素
+        const i0Value = document.getElementById('i0-value');
+        const i1Value = document.getElementById('i1-value');
+        const q0Value = document.getElementById('q0-value');
+        const q1Value = document.getElementById('q1-value');
+        
+        // 控制按鈕
+        const btnStart = document.getElementById('btn-start');
+        const btnStop = document.getElementById('btn-stop');
+        const btnReset = document.getElementById('btn-reset');
+        const btnAuto = document.getElementById('btn-auto');
+        const btnManual = document.getElementById('btn-manual');
+        const btnEmergency = document.getElementById('btn-emergency');
+        const btnMute = document.getElementById('btn-mute');
+        const btnTestSound = document.getElementById('btn-test-sound');
+        
+        // 站點元素
+        const station1 = document.getElementById('station1');
+        const station2 = document.getElementById('station2');
+        const station3 = document.getElementById('station3');
+        const station4 = document.getElementById('station4');
+        
+        const conveyor1 = document.getElementById('conveyor1');
+        const conveyor2 = document.getElementById('conveyor2');
+        const conveyor3 = document.getElementById('conveyor3');
+        const conveyor4 = document.getElementById('conveyor4');
+        
+        // 生產數據元素
+        const feedCountElement = document.getElementById('feed-count');
+        const processCountElement = document.getElementById('process-count');
+        const goodCountElement = document.getElementById('good-count');
+        const badCountElement = document.getElementById('bad-count');
+        const totalCountElement = document.getElementById('total-count');
+        const toolLifeElement = document.getElementById('tool-life');
+        const feedStatusElement = document.getElementById('feed-status');
+        const yieldRateElement = document.getElementById('yield-rate');
+        
+        // 監控元素
+        const monitorScan = document.getElementById('monitor-scan');
+        const monitorRuntime = document.getElementById('monitor-runtime');
+        const monitorRate = document.getElementById('monitor-rate');
+        const monitorLoad = document.getElementById('monitor-load');
+        
+        // ========== 初始化 ==========
+        function init() {
+            setupEventListeners();
+            updateDisplay();
+            startSimulationLoop();
+            showMessage('PLC 模擬系統已啟動，歡迎使用！', 'info');
+        }
+        
+        // ========== 事件監聽 ==========
+        function setupEventListeners() {
+            // 啟動按鈕
+            btnStart.addEventListener('click', () => {
+                soundSystem.play('button');
+                if (!systemState.isEmergency) {
+                    systemState.isRunning = true;
+                    systemState.startTime = Date.now();
+                    ioStatus.i0 = true;
+                    updatePLCProgram();
+                    soundSystem.play('start');
+                    soundSystem.play('motorStart');
+                    showMessage('系統啟動成功', 'success');
+                }
+            });
+            
+            // 停止按鈕
+            btnStop.addEventListener('click', () => {
+                soundSystem.play('button');
+                systemState.isRunning = false;
+                ioStatus.i0 = false;
+                updatePLCProgram();
+                soundSystem.play('stop');
+                showMessage('系統已停止', 'warning');
+            });
+            
+            // 重置按鈕
+            btnReset.addEventListener('click', () => {
+                soundSystem.play('button');
+                resetSystem();
+                soundSystem.play('complete');
+                showMessage('系統重置完成', 'info');
+            });
+            
+            // 自動模式
+            btnAuto.addEventListener('click', () => {
+                soundSystem.play('button');
+                systemState.mode = 'auto';
+                updateModeButtons();
+                showMessage('切換到自動模式', 'info');
+            });
+            
+            // 手動模式
+            btnManual.addEventListener('click', () => {
+                soundSystem.play('button');
+                systemState.mode = 'manual';
+                updateModeButtons();
+                showMessage('切換到手動模式', 'info');
+            });
+            
+            // 急停按鈕
+            btnEmergency.addEventListener('click', () => {
+                soundSystem.play('button');
+                systemState.isEmergency = !systemState.isEmergency;
+                ioStatus.i1 = systemState.isEmergency;
+                updatePLCProgram();
+                
+                if (systemState.isEmergency) {
+                    soundSystem.play('emergency');
+                    showMessage('急停觸發！系統緊急停止', 'error');
+                } else {
+                    soundSystem.play('warning');
+                    showMessage('急停已復位', 'info');
+                }
+            });
+            
+            // 靜音按鈕
+            btnMute.addEventListener('click', () => {
+                soundSystem.toggleMute();
+            });
+            
+            // 測試音效按鈕
+            btnTestSound.addEventListener('click', () => {
+                soundSystem.play('test');
+                showMessage('音效測試播放中...', 'info');
+                
+                // 播放所有音效樣本
+                setTimeout(() => soundSystem.play('start'), 100);
+                setTimeout(() => soundSystem.play('motorStart'), 500);
+                setTimeout(() => soundSystem.play('conveyor'), 1000);
+                setTimeout(() => soundSystem.play('productMove'), 1500);
+                setTimeout(() => soundSystem.play('success'), 2000);
+                setTimeout(() => soundSystem.play('emergency'), 2500);
+            });
+            
+            // I/O 點擊事件
+            document.getElementById('io-i0').addEventListener('click', () => {
+                soundSystem.play('button');
+                if (systemState.mode === 'manual') {
+                    ioStatus.i0 = !ioStatus.i0;
+                    soundSystem.play(ioStatus.i0 ? 'ioOn' : 'ioOff');
+                    updatePLCProgram();
+                }
+            });
+            
+            document.getElementById('io-i1').addEventListener('click', () => {
+                soundSystem.play('button');
+                if (systemState.mode === 'manual') {
+                    ioStatus.i1 = !ioStatus.i1;
+                    soundSystem.play(ioStatus.i1 ? 'warning' : 'ioOff');
+                    updatePLCProgram();
+                }
+            });
+        }
+        
+        // ========== PLC 程式邏輯 ==========
+        function updatePLCProgram() {
+            // 急停優先處理
+            if (ioStatus.i1) {
+                systemState.isRunning = false;
+                ioStatus.q0 = false;
+                ioStatus.q1 = true;
+                ioStatus.m0 = false;
+                ioStatus.m1 = false;
+                ioStatus.m2 = false;
+                ioStatus.m3 = false;
+            } else {
+                ioStatus.q1 = false;
+                
+                if (ioStatus.i0 && !systemState.isEmergency) {
+                    ioStatus.q0 = true;
+                    
+                    if (systemState.mode === 'auto') {
+                        ioStatus.m0 = true;
+                        ioStatus.m1 = true;
+                        ioStatus.m2 = true;
+                        ioStatus.m3 = true;
+                        systemState.conveyorSpeed = 1.5;
+                    } else {
+                        ioStatus.m0 = true;
+                        ioStatus.m1 = productionData.feedCount > 0;
+                        ioStatus.m2 = productionData.processCount > 0;
+                        ioStatus.m3 = productionData.goodCount > 0;
+                        systemState.conveyorSpeed = 1.0;
+                    }
+                    
+                    // 播放輸送帶音效
+                    if (ioStatus.m0) {
+                        soundSystem.play('conveyor');
+                    }
+                } else {
+                    ioStatus.q0 = false;
+                    ioStatus.m0 = false;
+                    ioStatus.m1 = false;
+                    ioStatus.m2 = false;
+                    ioStatus.m3 = false;
+                }
+            }
+            
+            updateDisplay();
+        }
+        
+        // ========== 生產線更新 ==========
+        function updateProductionLine() {
+            if (!systemState.isRunning || systemState.isEmergency) return;
+            
+            const now = Date.now();
+            const deltaTime = (now - productionData.lastUpdate) / 1000;
+            productionData.lastUpdate = now;
+            
+            // 上料站
+            if (ioStatus.m0 && productionData.feedStock > 0) {
+                if (Math.random() > 0.7) {
+                    productionData.feedCount++;
+                    productionData.feedStock--;
+                    startProductAnimation(1);
+                    soundSystem.play('productMove');
+                }
+            }
+            
+            // 加工站
+            if (ioStatus.m1 && productionData.feedCount > productionData.processCount) {
+                if (Math.random() > 0.6) {
+                    productionData.processCount++;
+                    productionData.toolLife -= 0.1;
+                    startProductAnimation(2);
+                    soundSystem.play('productMove');
+                    
+                    if (productionData.toolLife < 30) {
+                        soundSystem.play('warning');
+                        showMessage('刀具壽命低，請更換！', 'warning');
+                    }
+                }
+            }
+            
+            // 檢測站
+            if (ioStatus.m2 && productionData.processCount > productionData.totalCount) {
+                if (Math.random() > 0.5) {
+                    const isGood = Math.random() > 0.1;
+                    
+                    if (isGood) {
+                        productionData.goodCount++;
+                        soundSystem.play('success');
+                    } else {
+                        productionData.badCount++;
+                        soundSystem.play('error');
+                    }
+                    
+                    productionData.totalCount++;
+                    startProductAnimation(3);
+                }
+            }
+            
+            // 下料站
+            if (ioStatus.m3 && productionData.goodCount > 0) {
+                if (Math.random() > 0.8) {
+                    startProductAnimation(4);
+                    soundSystem.play('complete');
+                }
+            }
+            
+            updateProductionDisplay();
+        }
+        
+        // ========== 產品動畫 ==========
+        function startProductAnimation(stationNum) {
+            const product = document.getElementById(`product${stationNum}`);
+            const station = document.getElementById(`station${stationNum}`);
+            
+            // 清除現有動畫
+            if (productAnimations[`station${stationNum}`]) {
+                clearTimeout(productAnimations[`station${stationNum}`]);
+            }
+            
+            product.classList.add('moving');
+            product.style.left = '-50px';
+            
+            // 開始動畫
+            setTimeout(() => {
+                product.classList.remove('moving');
+            }, 3000);
+            
+            // 記錄動畫計時器
+            productAnimations[`station${stationNum}`] = setTimeout(() => {
+                product.classList.remove('moving');
+            }, 3000);
+        }
+        
+        // ========== 更新顯示 ==========
+        function updateDisplay() {
+            // PLC 狀態
+            if (systemState.isEmergency) {
+                plcLed.className = 'led error';
+                plcStatusText.textContent = '急停狀態';
+            } else if (systemState.isRunning) {
+                plcLed.className = 'led';
+                plcStatusText.textContent = '運行中';
+            } else {
+                plcLed.className = 'led warning';
+                plcStatusText.textContent = '停止中';
+            }
+            
+            // I/O 顯示
+            updateIODisplay();
+            
+            // 站點狀態
+            updateStationStatus();
+            
+            // 運行時間
+            updateRuntime();
+            
+            // 按鈕狀態
+            updateButtonStates();
+            
+            // 模式按鈕
+            updateModeButtons();
+        }
+        
+        function updateIODisplay() {
+            i0Value.textContent = ioStatus.i0 ? 'ON' : 'OFF';
+            i0Value.className = `io-value ${ioStatus.i0 ? 'on' : 'off'}`;
+            
+            i1Value.textContent = ioStatus.i1 ? 'ON' : 'OFF';
+            i1Value.className = `io-value ${ioStatus.i1 ? 'on' : 'off'}`;
+            
+            q0Value.textContent = ioStatus.q0 ? 'ON' : 'OFF';
+            q0Value.className = `io-value ${ioStatus.q0 ? 'on' : 'off'}`;
+            
+            q1Value.textContent = ioStatus.q1 ? 'ON' : 'OFF';
+            q1Value.className = `io-value ${ioStatus.q1 ? 'on' : 'off'}`;
+            
+            // I/O 項目狀態
+            document.getElementById('io-i0').classList.toggle('active', ioStatus.i0);
+            document.getElementById('io-i1').classList.toggle('active', ioStatus.i1);
+            document.getElementById('io-q0').classList.toggle('active', ioStatus.q0);
+            document.getElementById('io-q1').classList.toggle('active', ioStatus.q1);
+        }
+        
+        function updateStationStatus() {
+            // 站點1
+            station1.classList.toggle('active', ioStatus.m0);
+            conveyor1.className = `conveyor ${ioStatus.m0 ? 'running' : 'stopped'}`;
+            document.getElementById('status1').textContent = ioStatus.m0 ? '運行中' : '停止';
+            document.getElementById('status1').className = `station-status ${ioStatus.m0 ? 'status-running' : 'status-stopped'}`;
+            
+            // 站點2
+            station2.classList.toggle('active', ioStatus.m1);
+            conveyor2.className = `conveyor ${ioStatus.m1 ? 'running' : 'stopped'}`;
+            document.getElementById('status2').textContent = ioStatus.m1 ? '運行中' : '停止';
+            document.getElementById('status2').className = `station-status ${ioStatus.m1 ? 'status-running' : 'status-stopped'}`;
+            
+            // 站點3
+            station3.classList.toggle('active', ioStatus.m2);
+            conveyor3.className = `conveyor ${ioStatus.m2 ? 'running' : 'stopped'}`;
+            document.getElementById('status3').textContent = ioStatus.m2 ? '運行中' : '停止';
+            document.getElementById('status3').className = `station-status ${ioStatus.m2 ? 'status-running' : 'status-stopped'}`;
+            
+            // 站點4
+            station4.classList.toggle('active', ioStatus.m3);
+            conveyor4.className = `conveyor ${ioStatus.m3 ? 'running' : 'stopped'}`;
+            document.getElementById('status4').textContent = ioStatus.m3 ? '運行中' : '停止';
+            document.getElementById('status4').className = `station-status ${ioStatus.m3 ? 'status-running' : 'status-stopped'}`;
+        }
+        
+        function updateProductionDisplay() {
+            feedCountElement.textContent = productionData.feedCount;
+            processCountElement.textContent = productionData.processCount;
+            goodCountElement.textContent = productionData.goodCount;
+            badCountElement.textContent = productionData.badCount;
+            totalCountElement.textContent = productionData.totalCount;
+            toolLifeElement.textContent = `${productionData.toolLife.toFixed(1)}%`;
+            feedStatusElement.textContent = productionData.feedStock > 20 ? '充足' : '低庫存';
+            
+            const yieldRate = productionData.totalCount > 0 ? 
+                (productionData.goodCount / productionData.totalCount * 100).toFixed(1) : 0;
+            yieldRateElement.textContent = `${yieldRate}%`;
+            
+            // 更新監控數據
+            const ratePerMin = productionData.totalCount / (systemState.runtime / 60);
+            monitorRate.textContent = `${ratePerMin.toFixed(1)}/min`;
+            monitorLoad.textContent = `${Math.min(100, Math.round(systemState.conveyorSpeed * 50))}%`;
+        }
+        
+        function updateRuntime() {
+            if (systemState.isRunning && systemState.startTime) {
+                systemState.runtime = Math.floor((Date.now() - systemState.startTime) / 1000);
+                const minutes = Math.floor(systemState.runtime / 60);
+                const seconds = systemState.runtime % 60;
+                monitorRuntime.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+        
+        function updateButtonStates() {
+            btnStart.disabled = systemState.isRunning || systemState.isEmergency;
+            btnStop.disabled = !systemState.isRunning || systemState.isEmergency;
+            btnEmergency.style.background = systemState.isEmergency ? '#d32f2f' : '#f44336';
+        }
+        
+        function updateModeButtons() {
+            btnAuto.style.background = systemState.mode === 'auto' ? '#4caf50' : '#0066b3';
+            btnManual.style.background = systemState.mode === 'manual' ? '#4caf50' : '#0066b3';
+        }
+        
+        // ========== 系統控制 ==========
+        function resetSystem() {
+            systemState.isRunning = false;
+            systemState.isEmergency = false;
+            systemState.mode = 'manual';
+            systemState.startTime = null;
+            systemState.runtime = 0;
+            systemState.conveyorSpeed = 1.0;
+            
+            ioStatus = {
+                i0: false,
+                i1: false,
+                q0: false,
+                q1: false,
+                m0: false,
+                m1: false,
+                m2: false,
+                m3: false
+            };
+            
+            productionData = {
+                feedCount: 0,
+                processCount: 0,
+                goodCount: 0,
+                badCount: 0,
+                totalCount: 0,
+                toolLife: 100,
+                feedStock: 100,
+                lastUpdate: Date.now()
+            };
+            
+            // 停止所有動畫
+            Object.keys(productAnimations).forEach(key => {
+                if (productAnimations[key]) {
+                    clearTimeout(productAnimations[key]);
+                }
+            });
+            
+            updateDisplay();
+            updateProductionDisplay();
+        }
+        
+        // ========== 模擬循環 ==========
+        function startSimulationLoop() {
+            // PLC 掃描循環
+            setInterval(() => {
+                systemState.scanCycle = 10 + Math.random() * 10;
+                scanTimeElement.textContent = `掃描: ${systemState.scanCycle.toFixed(0)}ms`;
+                monitorScan.textContent = `${systemState.scanCycle.toFixed(0)}ms`;
+                updatePLCProgram();
+            }, 500);
+            
+            // 生產線更新循環
+            setInterval(() => {
+                updateProductionLine();
+            }, 300);
+            
+            // 隨機事件
+            setInterval(() => {
+                if (systemState.isRunning && !systemState.isEmergency && Math.random() > 0.9) {
+                    triggerRandomEvent();
+                }
+            }, 5000);
+        }
+        
+        // ========== 隨機事件 ==========
+        function triggerRandomEvent() {
+            const events = [
+                {
+                    name: '物料堵塞',
+                    action: () => {
+                        ioStatus.m1 = false;
+                        soundSystem.play('error');
+                        showMessage('加工站發生物料堵塞！', 'error');
+                        setTimeout(() => {
+                            if (systemState.isRunning) {
+                                ioStatus.m1 = true;
+                                soundSystem.play('success');
+                                showMessage('物料堵塞已排除', 'info');
+                            }
+                        }, 3000);
+                    }
+                },
+                {
+                    name: '電壓波動',
+                    action: () => {
+                        systemState.conveyorSpeed = 0.8;
+                        soundSystem.play('warning');
+                        showMessage('電壓波動，輸送帶速度降低', 'warning');
+                        setTimeout(() => {
+                            systemState.conveyorSpeed = systemState.mode === 'auto' ? 1.5 : 1.0;
+                        }, 2000);
+                    }
+                }
+            ];
+            
+            const event = events[Math.floor(Math.random() * events.length)];
+            event.action();
+        }
+        
+        // ========== 訊息顯示 ==========
+        function showMessage(message, type) {
+            const colors = {
+                info: '#2196f3',
+                success: '#4caf50',
+                warning: '#ff9800',
+                error: '#f44336'
+            };
+            
+            const alert = document.createElement('div');
+            alert.className = 'alert-message';
+            alert.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 
+                                      type === 'warning' ? 'exclamation-circle' : 
+                                      type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                    <div>${message}</div>
+                </div>
+            `;
+            alert.style.background = colors[type];
+            
+            document.body.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.remove();
+                }
+            }, 3000);
+        }
+        
+        // ========== 啟動系統 ==========
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
