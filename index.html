@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>邏輯閘計算機 - 手機版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 15px;
+            font-size: 16px;
+        }
+        
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* 標題區 */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        h1 {
+            color: #1a2980;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        /* 手機標籤頁 */
+        .mobile-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            padding: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .tab.active {
+            background: #1a2980;
+            color: white;
+            box-shadow: 0 4px 8px rgba(26, 41, 128, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 輸入控制區 */
+        .input-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .input-toggle {
+            flex: 1;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-toggle.active {
+            border-color: #1a2980;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            transform: translateY(-5px);
+        }
+        
+        .input-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .input-value {
+            font-size: 3rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            color: #1a2980;
+        }
+        
+        .input-value.one {
+            color: #00b894;
+        }
+        
+        .input-value.zero {
+            color: #e74c3c;
+        }
+        
+        /* 顯示區 */
+        .display {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        
+        .expression {
+            font-size: 1.5rem;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+            color: #2d3436;
+            min-height: 30px;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+        
+        .result {
+            font-size: 4.5rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            min-height: 60px;
+            margin-top: 10px;
+        }
+        
+        .result-one {
+            color: #00b894;
+            text-shadow: 0 0 10px rgba(0, 184, 148, 0.3);
+        }
+        
+        .result-zero {
+            color: #e74c3c;
+            text-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+        }
+        
+        /* 按鍵區 */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 20px 5px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(106, 17, 203, 0.2);
+        }
+        
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-logic {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #333;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        }
+        
+        .btn-equals {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            grid-column: span 3;
+            font-size: 1.3rem;
+            padding: 22px 5px;
+        }
+        
+        /* 真值表 */
+        .truth-table {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .truth-table h3 {
+            color: #1a2980;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        
+        th {
+            background: #1a2980;
+            color: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px 10px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            font-weight: 500;
+        }
+        
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        
+        .output-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .output-1 { color: #00b894; }
+        .output-0 { color: #e74c3c; }
+        
+        /* 邏輯閘卡片 */
+        .gate-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .gate-card.active {
+            border-color: #1a2980;
+            background: #f0f7ff;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(26, 41, 128, 0.15);
+        }
+        
+        .gate-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .gate-title {
+            color: #1a2980;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .gate-symbol {
+            font-size: 2.5rem;
+            color: #6a11cb;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .gate-visual {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        
+        .gate-icon {
+            font-size: 3.5rem;
+            color: #6a11cb;
+        }
+        
+        .gate-truth {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .truth-item {
+            background: #e8f4fc;
+            padding: 12px 10px;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .gate-formula {
+            font-family: 'Courier New', monospace;
+            background: #2d3436;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 1.1rem;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .gate-desc {
+            color: #555;
+            line-height: 1.6;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+        
+        .gate-desc strong {
+            color: #1a2980;
+        }
+        
+        /* 快速範例 */
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .example-btn {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border: none;
+            padding: 15px 10px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .example-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* 手機操作提示 */
+        .mobile-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(26, 41, 128, 0.95);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            z-index: 1000;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .hint-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .hint-icon {
+            font-size: 1.2rem;
+        }
+        
+        /* 響應式調整 */
+        @media (max-width: 480px) {
+            .keypad {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn-equals {
+                grid-column: span 2;
+            }
+            
+            .gate-visual {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .gate-icon {
+                font-size: 3rem;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .input-controls {
+                flex-direction: column;
+            }
+            
+            .examples {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 動畫效果 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.3s ease;
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 標題區 -->
+        <div class="header">
+            <h1>🧠 邏輯閘計算機</h1>
+            <div class="subtitle">手機友善版 • 點擊學習 • 即時計算</div>
+        </div>
+        
+        <!-- 手機標籤頁 -->
+        <div class="mobile-tabs">
+            <div class="tab active" data-tab="calculator">計算機</div>
+            <div class="tab" data-tab="gates">邏輯閘教學</div>
+            <div class="tab" data-tab="examples">範例</div>
+        </div>
+        
+        <!-- 計算機標籤頁 -->
+        <div class="tab-content active" id="calculator-tab">
+            <!-- 輸入控制 -->
+            <div class="input-controls">
+                <div class="input-toggle" id="toggleA">
+                    <div class="input-label">輸入 A</div>
+                    <div class="input-value zero" id="valueA">0</div>
+                </div>
+                <div class="input-toggle" id="toggleB">
+                    <div class="input-label">輸入 B</div>
+                    <div class="input-value zero" id="valueB">0</div>
+                </div>
+            </div>
+            
+            <!-- 顯示區 -->
+            <div class="display">
+                <div class="expression" id="expression">
+                    點擊下方按鈕建立表達式
+                </div>
+                <div class="result" id="result">?</div>
+            </div>
+            
+            <!-- 按鍵區 -->
+            <div class="keypad">
+                <button class="btn btn-logic" data-key="NOT">NOT</button>
+                <button class="btn btn-logic" data-key="AND">AND</button>
+                <button class="btn btn-logic" data-key="OR">OR</button>
+                
+                <button class="btn btn-logic" data-key="NAND">NAND</button>
+                <button class="btn btn-logic" data-key="NOR">NOR</button>
+                <button class="btn btn-logic" data-key="XOR">XOR</button>
+                
+                <button class="btn" data-key="A">A</button>
+                <button class="btn" data-key="B">B</button>
+                <button class="btn btn-clear" data-key="C">C</button>
+                
+                <button class="btn" data-key="(">(</button>
+                <button class="btn" data-key=")">)</button>
+                <button class="btn btn-clear" data-key="←">←</button>
+                
+                <button class="btn btn-equals" data-key="=">= 計算結果</button>
+            </div>
+            
+            <!-- 真值表 -->
+            <div class="truth-table">
+                <h3>真值表</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>A</th>
+                            <th>B</th>
+                            <th>結果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                            <td id="tt-0-0" class="output-cell">-</td>
+                        </tr>
+                        <tr>
+                            <td>0</td>
+                            <td>1</td>
+                            <td id="tt-0-1" class="output-cell">-</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>0</td>
+                            <td id="tt-1-0" class="output-cell">-</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>1</td>
+                            <td id="tt-1-1" class="output-cell">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 邏輯閘教學標籤頁 -->
+        <div class="tab-content" id="gates-tab">
+            <!-- NOT 閘 -->
+            <div class="gate-card" data-gate="NOT">
+                <div class="gate-header">
+                    <div class="gate-title">NOT 閘</div>
+                    <div class="gate-symbol">⏊</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">NOT</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">A=0 → Y=1</div>
+                        <div class="truth-item">A=1 → Y=0</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = NOT A = Ā</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>輸出與輸入相反。輸入1輸出0，輸入0輸出1。
+                    <br><strong>比喻：</strong>就像開關的相反狀態。
+                </div>
+            </div>
+            
+            <!-- AND 閘 -->
+            <div class="gate-card" data-gate="AND">
+                <div class="gate-header">
+                    <div class="gate-title">AND 閘</div>
+                    <div class="gate-symbol">&</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">AND</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">00→0</div>
+                        <div class="truth-item">01→0</div>
+                        <div class="truth-item">10→0</div>
+                        <div class="truth-item">11→1</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = A AND B = A·B</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>兩個輸入都是1時，輸出才是1。
+                    <br><strong>比喻：</strong>像串聯開關，兩個都要開燈才亮。
+                </div>
+            </div>
+            
+            <!-- OR 閘 -->
+            <div class="gate-card" data-gate="OR">
+                <div class="gate-header">
+                    <div class="gate-title">OR 閘</div>
+                    <div class="gate-symbol">≥1</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">OR</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">00→0</div>
+                        <div class="truth-item">01→1</div>
+                        <div class="truth-item">10→1</div>
+                        <div class="truth-item">11→1</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = A OR B = A+B</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>至少一個輸入是1時，輸出就是1。
+                    <br><strong>比喻：</strong>像並聯開關，任一開燈就亮。
+                </div>
+            </div>
+            
+            <!-- NAND 閘 -->
+            <div class="gate-card" data-gate="NAND">
+                <div class="gate-header">
+                    <div class="gate-title">NAND 閘</div>
+                    <div class="gate-symbol">&amp;+○</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">NAND</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">00→1</div>
+                        <div class="truth-item">01→1</div>
+                        <div class="truth-item">10→1</div>
+                        <div class="truth-item">11→0</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = NOT(A AND B)</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>AND的反相。只有兩個輸入都是1時，輸出才是0。
+                    <br><strong>重要：</strong>這是<b>通用閘</b>，可用它實現所有邏輯功能。
+                </div>
+            </div>
+            
+            <!-- NOR 閘 -->
+            <div class="gate-card" data-gate="NOR">
+                <div class="gate-header">
+                    <div class="gate-title">NOR 閘</div>
+                    <div class="gate-symbol">≥1+○</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">NOR</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">00→1</div>
+                        <div class="truth-item">01→0</div>
+                        <div class="truth-item">10→0</div>
+                        <div class="truth-item">11→0</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = NOT(A OR B)</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>OR的反相。只要一個輸入是1，輸出就是0。
+                    <br><strong>重要：</strong>這也是<b>通用閘</b>。
+                </div>
+            </div>
+            
+            <!-- XOR 閘 -->
+            <div class="gate-card" data-gate="XOR">
+                <div class="gate-header">
+                    <div class="gate-title">XOR 閘</div>
+                    <div class="gate-symbol">=1</div>
+                </div>
+                
+                <div class="gate-visual">
+                    <div class="gate-icon">XOR</div>
+                    <div class="gate-truth">
+                        <div class="truth-item">00→0</div>
+                        <div class="truth-item">01→1</div>
+                        <div class="truth-item">10→1</div>
+                        <div class="truth-item">11→0</div>
+                    </div>
+                </div>
+                
+                <div class="gate-formula">Y = A XOR B = A⊕B</div>
+                
+                <div class="gate-desc">
+                    <strong>功能：</strong>兩個輸入不同時輸出1，相同時輸出0。
+                    <br><strong>應用：</strong>用於比較和加法器。
+                </div>
+            </div>
+        </div>
+        
+        <!-- 範例標籤頁 -->
+        <div class="tab-content" id="examples-tab">
+            <div class="gate-card">
+                <h3 style="color: #1a2980; margin-bottom: 20px; text-align: center;">點擊範例自動載入</h3>
+                
+                <div class="examples">
+                    <button class="example-btn" data-expr="A AND B">A AND B</button>
+                    <button class="example-btn" data-expr="A OR B">A OR B</button>
+                    <button class="example-btn" data-expr="NOT A">NOT A</button>
+                    <button class="example-btn" data-expr="A XOR B">A XOR B</button>
+                    <button class="example-btn" data-expr="A NAND B">A NAND B</button>
+                    <button class="example-btn" data-expr="A NOR B">A NOR B</button>
+                    <button class="example-btn" data-expr="(A AND B) OR C">組合1</button>
+                    <button class="example-btn" data-expr="NOT (A OR B)">組合2</button>
+                </div>
+                
+                <div style="margin-top: 25px; padding: 20px; background: #f0f7ff; border-radius: 15px;">
+                    <h4 style="color: #1a2980; margin-bottom: 10px;">學習挑戰</h4>
+                    <ol style="color: #555; line-height: 1.8; padding-left: 20px;">
+                        <li>嘗試只用 NOR 閘實現 NOT 功能</li>
+                        <li>用兩個 NOR 閘實現 AND 功能</li>
+                        <li>觀察 XOR 與其他閘的真值表差異</li>
+                        <li>建立 (A AND B) OR (NOT A) 並測試所有輸入</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 手機操作提示 -->
+        <div class="mobile-hint" id="mobileHint">
+            <div class="hint-text">
+                <span class="hint-icon">👆</span>
+                <span id="hintMessage">點擊切換輸入值 A 和 B</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 邏輯閘函數
+        const logicFunctions = {
+            'NOT': (a, b) => a === 1 ? 0 : 1,
+            'AND': (a, b) => (a === 1 && b === 1) ? 1 : 0,
+            'OR': (a, b) => (a === 1 || b === 1) ? 1 : 0,
+            'NAND': (a, b) => (a === 1 && b === 1) ? 0 : 1,
+            'NOR': (a, b) => (a === 1 || b === 1) ? 0 : 1,
+            'XOR': (a, b) => (a !== b) ? 1 : 0
+        };
+        
+        // 狀態變數
+        let variables = { A: 0, B: 0 };
+        let currentExpression = '';
+        let currentGate = '';
+        let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initMobileTabs();
+            initInputToggles();
+            initButtons();
+            initGateCards();
+            updateDisplay();
+            showHint('點擊切換輸入值 A 和 B', 3000);
+        });
+        
+        // 初始化手機標籤頁
+        function initMobileTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    
+                    // 移除所有active類
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    // 添加active類到當前標籤
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    document.getElementById(`${tabId}-tab`).classList.add('slide-in');
+                    
+                    // 更新提示
+                    if (tabId === 'calculator') {
+                        showHint('點擊按鈕建立邏輯表達式', 2000);
+                    } else if (tabId === 'gates') {
+                        showHint('點擊邏輯閘卡片查看詳細說明', 2000);
+                    }
+                });
+            });
+        }
+        
+        // 初始化輸入切換
+        function initInputToggles() {
+            const toggleA = document.getElementById('toggleA');
+            const toggleB = document.getElementById('toggleB');
+            
+            toggleA.addEventListener('click', () => {
+                variables.A = variables.A === 0 ? 1 : 0;
+                updateInputDisplay();
+                calculate();
+                showHint(`輸入 A 已設為 ${variables.A}`, 1500);
+            });
+            
+            toggleB.addEventListener('click', () => {
+                variables.B = variables.B === 0 ? 1 : 0;
+                updateInputDisplay();
+                calculate();
+                showHint(`輸入 B 已設為 ${variables.B}`, 1500);
+            });
+        }
+        
+        // 初始化按鈕
+        function initButtons() {
+            // 邏輯按鈕
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const key = btn.dataset.key;
+                    handleKeyPress(key);
+                    btn.classList.add('pulse');
+                    setTimeout(() => btn.classList.remove('pulse'), 300);
+                });
+            });
+            
+            // 範例按鈕
+            document.querySelectorAll('.example-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const expr = btn.dataset.expr;
+                    currentExpression = expr;
+                    updateDisplay();
+                    calculate();
+                    
+                    // 切換到計算機標籤頁
+                    document.querySelector('[data-tab="calculator"]').click();
+                    showHint(`已載入範例: ${expr}`, 2000);
+                });
+            });
+        }
+        
+        // 初始化邏輯閘卡片
+        function initGateCards() {
+            document.querySelectorAll('.gate-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const gate = card.dataset.gate;
+                    
+                    // 高亮選中的卡片
+                    document.querySelectorAll('.gate-card').forEach(c => {
+                        c.classList.remove('active');
+                    });
+                    card.classList.add('active');
+                    
+                    // 建立對應表達式
+                    if (gate === 'NOT') {
+                        currentExpression = 'NOT A';
+                    } else {
+                        currentExpression = `A ${gate} B`;
+                    }
+                    
+                    // 切換到計算機標籤頁
+                    document.querySelector('[data-tab="calculator"]').click();
+                    updateDisplay();
+                    calculate();
+                    
+                    showHint(`已載入 ${gate} 閘表達式`, 2000);
+                });
+            });
+        }
+        
+        // 處理按鍵輸入
+        function handleKeyPress(key) {
+            switch(key) {
+                case 'C':
+                    currentExpression = '';
+                    showHint('已清除表達式', 1500);
+                    break;
+                case '←':
+                    currentExpression = currentExpression.slice(0, -1).trim();
+                    showHint('已刪除最後一個字符', 1500);
+                    break;
+                case '=':
+                    calculate();
+                    return;
+                default:
+                    // 避免連續空格
+                    if (currentExpression.endsWith(' ') && key === ' ') {
+                        return;
+                    }
+                    
+                    currentExpression += (currentExpression ? ' ' : '') + key;
+                    showHint(`已添加: ${key}`, 1000);
+                    break;
+            }
+            
+            updateDisplay();
+        }
+        
+        // 更新顯示
+        function updateDisplay() {
+            // 更新表達式
+            const exprElement = document.getElementById('expression');
+            exprElement.textContent = currentExpression || '點擊下方按鈕建立表達式';
+            
+            // 更新輸入顯示
+            updateInputDisplay();
+        }
+        
+        // 更新輸入顯示
+        function updateInputDisplay() {
+            const valueA = document.getElementById('valueA');
+            const valueB = document.getElementById('valueB');
+            const toggleA = document.getElementById('toggleA');
+            const toggleB = document.getElementById('toggleB');
+            
+            // 更新數值
+            valueA.textContent = variables.A;
+            valueB.textContent = variables.B;
+            
+            // 更新樣式
+            valueA.className = `input-value ${variables.A === 1 ? 'one' : 'zero'}`;
+            valueB.className = `input-value ${variables.B === 1 ? 'one' : 'zero'}`;
+            
+            // 更新激活狀態
+            toggleA.classList.toggle('active', variables.A === 1);
+            toggleB.classList.toggle('active', variables.B === 1);
+        }
+        
+        // 計算表達式
+        function calculate() {
+            if (!currentExpression) {
+                const resultElement = document.getElementById('result');
+                resultElement.textContent = '?';
+                resultElement.className = 'result';
+                updateTruthTable();
+                return;
+            }
+            
+            try {
+                const result = evaluateExpression(currentExpression);
+                const resultElement = document.getElementById('result');
+                resultElement.textContent = result;
+                resultElement.className = `result ${result === 1 ? 'result-one' : 'result-zero'}`;
+                resultElement.classList.add('pulse');
+                setTimeout(() => resultElement.classList.remove('pulse'), 300);
+                
+                updateTruthTable();
+                showHint(`計算結果: ${result}`, 1500);
+            } catch (error) {
+                document.getElementById('result').textContent = '錯誤';
+                document.getElementById('result').className = 'result';
+                showHint('表達式有誤，請檢查', 2000);
+            }
+        }
+        
+        // 解析表達式
+        function evaluateExpression(expr) {
+            expr = expr.toUpperCase().trim();
+            
+            // 解析當前使用的閘
+            const gates = ['NOT', 'AND', 'OR', 'NAND', 'NOR', 'XOR'];
+            for (const gate of gates) {
+                if (expr.includes(gate)) {
+                    currentGate = gate;
+                    break;
+                }
+            }
+            
+            // 處理 NOT
+            if (expr === 'NOT A') return logicFunctions.NOT(variables.A, 0);
+            if (expr === 'NOT B') return logicFunctions.NOT(variables.B, 0);
+            
+            // 處理二元運算
+            const patterns = [
+                { op: 'AND', func: logicFunctions.AND },
+                { op: 'OR', func: logicFunctions.OR },
+                { op: 'NAND', func: logicFunctions.NAND },
+                { op: 'NOR', func: logicFunctions.NOR },
+                { op: 'XOR', func: logicFunctions.XOR }
+            ];
+            
+            for (const pattern of patterns) {
+                if (expr === `A ${pattern.op} B`) {
+                    return pattern.func(variables.A, variables.B);
+                }
+                if (expr === `B ${pattern.op} A`) {
+                    return pattern.func(variables.B, variables.A);
+                }
+            }
+            
+            // 簡單組合表達式
+            if (expr === '(A AND B) OR C') {
+                const andResult = logicFunctions.AND(variables.A, variables.B);
+                // 假設 C = 0
+                return logicFunctions.OR(andResult, 0);
+            }
+            
+            if (expr === 'NOT (A OR B)') {
+                const orResult = logicFunctions.OR(variables.A, variables.B);
+                return logicFunctions.NOT(orResult, 0);
+            }
+            
+            return 0;
+        }
+        
+        // 更新真值表
+        function updateTruthTable() {
+            if (!currentExpression) {
+                ['tt-0-0', 'tt-0-1', 'tt-1-0', 'tt-1-1'].forEach(id => {
+                    document.getElementById(id).textContent = '-';
+                    document.getElementById(id).className = 'output-cell';
+                });
+                return;
+            }
+            
+            const combinations = [
+                { A: 0, B: 0 },
+                { A: 0, B: 1 },
+                { A: 1, B: 0 },
+                { A: 1, B: 1 }
+            ];
+            
+            combinations.forEach(combo => {
+                const originalA = variables.A;
+                const originalB = variables.B;
+                
+                variables.A = combo.A;
+                variables.B = combo.B;
+                
+                try {
+                    const result = evaluateExpression(currentExpression);
+                    const cellId = `tt-${combo.A}-${combo.B}`;
+                    const cell = document.getElementById(cellId);
+                    cell.textContent = result;
+                    cell.className = `output-cell output-${result}`;
+                    
+                    // 如果是當前值，高亮顯示
+                    if (originalA === combo.A && originalB === combo.B) {
+                        cell.style.backgroundColor = '#fffacd';
+                        setTimeout(() => {
+                            cell.style.backgroundColor = '';
+                        }, 1000);
+                    }
+                } catch (error) {
+                    document.getElementById(`tt-${combo.A}-${combo.B}`).textContent = '錯誤';
+                }
+                
+                variables.A = originalA;
+                variables.B = originalB;
+            });
+        }
+        
+        // 顯示手機提示
+        function showHint(message, duration = 3000) {
+            if (!isMobile) return;
+            
+            const hint = document.getElementById('mobileHint');
+            const hintMessage = document.getElementById('hintMessage');
+            
+            hintMessage.textContent = message;
+            hint.style.display = 'block';
+            
+            setTimeout(() => {
+                hint.style.display = 'none';
+            }, duration);
+        }
+        
+        // 鍵盤支援（桌面版）
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toUpperCase();
+            
+            if (key === 'ENTER') {
+                calculate();
+                e.preventDefault();
+            } else if (key === 'BACKSPACE') {
+                currentExpression = currentExpression.slice(0, -1).trim();
+                updateDisplay();
+                e.preventDefault();
+            } else if (key === 'C' || key === 'ESCAPE') {
+                currentExpression = '';
+                updateDisplay();
+                e.preventDefault();
+            } else if (['A', 'B', '0', '1', '(', ')'].includes(key)) {
+                handleKeyPress(key);
+                e.preventDefault();
+            } else if (key === '&') {
+                handleKeyPress('AND');
+                e.preventDefault();
+            } else if (key === '|') {
+                handleKeyPress('OR');
+                e.preventDefault();
+            } else if (key === '^') {
+                handleKeyPress('XOR');
+                e.preventDefault();
+            } else if (key === '~' || key === '!') {
+                handleKeyPress('NOT');
+                e.preventDefault();
+            }
+        });
+        
+        // 預設載入
+        setTimeout(() => {
+            currentExpression = 'A AND B';
+            updateDisplay();
+            calculate();
+            showHint('試試點擊邏輯閘卡片學習', 4000);
+        }, 1500);
+    </script>
+</body>
+</html>
