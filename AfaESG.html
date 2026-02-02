@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>楊士徹 (Afa Yang) - 景煬低碳淨能團隊名片</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* 藍色主題 (工程風格) */
+            --primary-blue: #3b82f6;
+            --primary-indigo: #6366f1;
+            --accent-cyan: #06b6d4;
+            --accent-teal: #0d9488;
+            --accent-sky: #0ea5e9;
+            --accent-steel: #475569;
+            --bg-gradient: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            --avatar-gradient: linear-gradient(135deg, var(--primary-blue), var(--primary-indigo), var(--accent-cyan));
+            --btn-primary-gradient: linear-gradient(135deg, var(--primary-blue), var(--primary-indigo));
+            --btn-secondary-gradient: linear-gradient(135deg, var(--accent-cyan), var(--accent-teal));
+            --btn-engineering-gradient: linear-gradient(135deg, var(--accent-steel), #334155);
+            --text-main: #1e293b;
+            --text-secondary: #334155;
+            --text-subtle: #475569;
+            --border-light: #cbd5e1;
+            --border-medium: #94a3b8;
+            --shadow-light: 0 4px 20px rgba(59, 130, 246, 0.05);
+            --shadow-medium: 0 10px 30px rgba(59, 130, 246, 0.1);
+            --shadow-heavy: 0 20px 50px rgba(59, 130, 246, 0.15);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --radius-circle: 50%;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Noto Sans TC", "Segoe UI", system-ui, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 裝飾背景元素 */
+        .bg-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: var(--radius-circle);
+            opacity: 0.05;
+            filter: blur(40px);
+        }
+
+        .bg-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-blue);
+            top: -150px;
+            right: -150px;
+        }
+
+        .bg-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--primary-indigo);
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .bg-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-cyan);
+            top: 40%;
+            left: 10%;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--card-gradient);
+            border-radius: var(--radius-xl);
+            padding: 35px 30px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-heavy);
+            transform: translateY(-5px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--avatar-gradient);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            z-index: 2;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 語言切換 */
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border-radius: 50px;
+            padding: 6px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .language-toggle:hover::before {
+            transform: translateX(100%);
+        }
+
+        .lang-btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-btn.active {
+            background: var(--btn-primary-gradient);
+            color: white;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 頭像區 */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--border-light);
+            position: relative;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-right: 25px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-circle);
+            background: var(--avatar-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 32px;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.25);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.35);
+        }
+
+        .avatar-ring {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: var(--radius-circle);
+            border: 2px dashed var(--primary-blue);
+            top: -5px;
+            left: -5px;
+            animation: rotate 20s linear infinite;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        /* 工程部副總職銜設計 */
+        .title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-cyan), var(--primary-blue));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .title i {
+            font-size: 18px;
+            color: var(--accent-sky);
+            text-shadow: 0 0 5px rgba(14, 165, 233, 0.3);
+        }
+
+        .name {
+            font-size: 30px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            background: var(--btn-primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+
+        .name-en {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .company {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .company-sub {
+            font-size: 14px;
+            color: var(--text-subtle);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* 專業技能標籤 */
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .skill-tag:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(59, 130, 246, 0.2);
+        }
+
+        /* 聯絡資訊區 */
+        .contact-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title i {
+            font-size: 20px;
+            background: var(--btn-primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(240, 249, 255, 0.9));
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.03), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .contact-item:hover::before {
+            transform: translateX(100%);
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-blue);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: var(--btn-primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+            transition: var(--transition);
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .contact-details {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: var(--text-subtle);
+            margin-bottom: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .contact-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            display: inline-block;
+        }
+
+        .contact-link:hover {
+            color: var(--primary-indigo);
+        }
+
+        .contact-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--btn-primary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .contact-link:hover::after {
+            width: 100%;
+        }
+
+        /* 專業簡介 */
+        .bio-section {
+            background: linear-gradient(135deg, rgba(240, 249, 255, 0.8), rgba(224, 242, 254, 0.8));
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: var(--shadow-light);
+        }
+
+        .bio-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bio-title i {
+            color: var(--primary-blue);
+        }
+
+        .bio-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .bio-highlight {
+            background: linear-gradient(120deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        /* 行動按鈕 */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .actions {
+                flex-direction: column;
+            }
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(59, 130, 246, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--btn-secondary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.25);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(6, 182, 212, 0.35);
+        }
+
+        .btn-engineering {
+            background: var(--btn-engineering-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(71, 85, 105, 0.25);
+        }
+
+        .btn-engineering:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(71, 85, 105, 0.35);
+        }
+
+        /* 網站連結 */
+        .website-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .website-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(240, 249, 255, 0.9), rgba(224, 242, 254, 0.9));
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+
+        .website-link:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.25);
+        }
+
+        .website-link i {
+            font-size: 18px;
+        }
+
+        /* 社交媒體 */
+        .social-media {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-circle);
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .social-icon:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-5px) rotate(10deg);
+            box-shadow: 0 8px 15px rgba(59, 130, 246, 0.25);
+        }
+
+        /* 隱藏英文內容 - 預設顯示中文 */
+        .en {
+            display: none;
+        }
+
+        /* 英文模式 */
+        .en-mode .zh {
+            display: none;
+        }
+
+        .en-mode .en {
+            display: block;
+        }
+
+        /* 動態裝飾點 */
+        .floating-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-circle);
+            background: var(--primary-blue);
+            opacity: 0.1;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-elements">
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+    <div class="bg-element bg-3"></div>
+</div>
+
+<div class="floating-dots" id="floatingDots"></div>
+
+<div class="card-container">
+    <div class="card" id="card">
+        <div class="language-toggle">
+            <button class="lang-btn active" id="btn-zh">
+                <i class="fas fa-language"></i>
+                <span class="zh">中文</span>
+                <span class="en">Chinese</span>
+            </button>
+            <button class="lang-btn" id="btn-en">
+                <i class="fas fa-globe"></i>
+                <span class="zh">English</span>
+                <span class="en">English</span>
+            </button>
+        </div>
+
+        <div class="card-content">
+            <div class="header">
+                <div class="avatar-container">
+                    <div class="avatar-ring"></div>
+                    <div class="avatar">AY</div>
+                </div>
+                <div class="info">
+                    <div class="title">
+                        <i class="fas fa-cogs"></i>
+                        <span class="zh">工程部副總</span>
+                        <span class="en">VP of Engineering</span>
+                    </div>
+                    
+                    <div class="name zh">楊士徹</div>
+                    <div class="name en">Afa Yang</div>
+                    
+                    <div class="name-en zh">Afa Yang</div>
+                    
+                    <div class="company zh">UDM ESG景煬低碳淨能事業群</div>
+                    <div class="company en">UDM ESG Group</div>
+                    
+                    <div class="skills">
+                        <span class="skill-tag zh">硬體工程</span>
+                        <span class="skill-tag en">Hardware Engineering</span>
+                        <span class="skill-tag zh">團隊管理</span>
+                        <span class="skill-tag en">Team Management</span>
+                        <span class="skill-tag zh">技術架構</span>
+                        <span class="skill-tag en">Technical Architecture</span>
+                        <span class="skill-tag zh">專案管理</span>
+                        <span class="skill-tag en">Project Management</span>
+                        <span class="skill-tag zh">系統開發</span>
+                        <span class="skill-tag en">System Development</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <div class="section-title">
+                    <i class="fas fa-address-card"></i>
+                    <span class="zh">聯絡資訊</span>
+                    <span class="en">Contact Information</span>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">手機</div>
+                            <div class="contact-label en">Mobile</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="tel:0973868959">0973-868-959</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">辦公室電話</div>
+                            <div class="contact-label en">Office Phone</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="tel:02-6620-2388">02-6620-2388</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">電子郵件</div>
+                            <div class="contact-label en">Email</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="mailto:afayang@udmgroup.com">afayang@udmgroup.com</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-id-badge"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">工程部門</div>
+                            <div class="contact-label en">Engineering Department</div>
+                            <div class="contact-value">
+                                <span class="zh">工程部副總經理</span>
+                                <span class="en">Vice President of Engineering</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-fax"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">傳真</div>
+                            <div class="contact-label en">Fax</div>
+                            <div class="contact-value">02-6620-2720</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-section">
+                <div class="bio-title">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="zh">專業簡介</span>
+                    <span class="en">Professional Profile</span>
+                </div>
+                <div class="bio-content zh">
+                    現任<span class="bio-highlight">景煬低碳淨能事業群工程部副總經理</span>，負責<span class="bio-highlight">硬體工程團隊管理</span>與<span class="bio-highlight">技術架構規劃</span>。擁有<span class="bio-highlight">豐富的軟體開發經驗</span>，專注於<span class="bio-highlight">系統設計</span>、<span class="bio-highlight">技術團隊領導</span>與<span class="bio-highlight">專案管理</span>。成功主導多項<span class="bio-highlight">大型系統開發專案</span>，擅長<span class="bio-highlight">敏捷開發流程</span>與<span class="bio-highlight">技術人才培養</span>。
+                </div>
+                <div class="bio-content en">
+                    Currently serving as <span class="bio-highlight">Vice President of Engineering at UDM ESG Group</span>, responsible for <span class="bio-highlight">Hardware engineering team management</span> and <span class="bio-highlight">technical architecture planning</span>. Possesses <span class="bio-highlight">extensive software development experience</span>, focusing on <span class="bio-highlight">system design</span>, <span class="bio-highlight">technical team leadership</span>, and <span class="bio-highlight">project management</span>. Successfully led multiple <span class="bio-highlight">large-scale system development projects</span>, skilled in <span class="bio-highlight">agile development processes</span> and <span class="bio-highlight">technical talent cultivation</span>.
+                </div>
+            </div>
+
+        
+            <div class="actions">
+                <a class="btn btn-primary" href="tel:0973868959">
+                    <i class="fas fa-phone"></i>
+                    <span class="zh">撥打手機</span>
+                    <span class="en">Call Mobile</span>
+                </a>
+                <a class="btn btn-secondary" href="mailto:afayang@udmgroup.com?subject=工程相關洽詢&body=楊副總您好，有關工程部門...">
+                    <i class="fas fa-envelope"></i>
+                    <span class="zh">發送郵件</span>
+                    <span class="en">Send Email</span>
+                </a>
+                
+            </div>
+
+            <div class="website-section">
+                <a class="website-link" href="https://jpesg.netlify.app/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="zh">訪問專業低碳管理方案官網</span>
+                    <span class="en">Visit Professional Low Carbon Soluction Website</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnZh = document.getElementById('btn-zh');
+        const btnEn = document.getElementById('btn-en');
+        const card = document.getElementById('card');
+        
+        // 預設顯示中文
+        card.classList.remove('en-mode');
+        
+        // 中文按鈕點擊
+        btnZh.addEventListener('click', function() {
+            card.classList.remove('en-mode');
+            btnZh.classList.add('active');
+            btnEn.classList.remove('active');
+        });
+        
+        // 英文按鈕點擊
+        btnEn.addEventListener('click', function() {
+            card.classList.add('en-mode');
+            btnEn.classList.add('active');
+            btnZh.classList.remove('active');
+        });
+        
+        // 創建浮動點
+        const floatingDots = document.getElementById('floatingDots');
+        const dotCount = 20;
+        
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            
+            // 隨機位置
+            dot.style.left = `${Math.random() * 100}%`;
+            dot.style.top = `${Math.random() * 100}%`;
+            
+            // 隨機大小
+            const size = Math.random() * 4 + 2;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            
+            // 隨機顏色
+            const colors = ['#3b82f6', '#6366f1', '#06b6d4', '#0d9488', '#0ea5e9'];
+            dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // 隨機動畫延遲
+            dot.style.animationDelay = `${Math.random() * 3}s`;
+            dot.style.animationDuration = `${Math.random() * 2 + 2}s`;
+            
+            floatingDots.appendChild(dot);
+        }
+        
+        // 為所有互動元素添加點擊效果
+        const interactiveElements = document.querySelectorAll('.contact-item, .btn, .skill-tag, .social-icon, .website-link');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('click', function(e) {
+                // 創建漣漪效果
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.5);
+                    transform: scale(0);
+                    animation: ripple-animation 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    pointer-events: none;
+                `;
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // 添加CSS動畫
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+
+</body>
+</html>
