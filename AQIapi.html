@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>環境監控 - 手機版</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 重置與基礎 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        /* 主容器 */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            padding-bottom: 80px; /* 底部按鈕空間 */
+        }
+        
+        /* 頂部狀態欄 */
+        .status-bar {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+        
+        .status-dot.connected {
+            background: #2ed573;
+            animation: pulse 2s infinite;
+        }
+        
+        /* 數據卡片 */
+        .data-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .data-card {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+        }
+        
+        .value-display {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unit {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-left: 5px;
+        }
+        
+        .quality-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-width: 80px;
+        }
+        
+        .good { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .moderate { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .unhealthy { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        
+        /* 圖表容器 */
+        .chart-container {
+            height: 250px;
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        /* 底部固定控制欄 */
+        .bottom-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        
+        .bottom-controls::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* 底部按鈕 */
+        .control-btn {
+            flex: 0 0 auto;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            min-width: 80px;
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .control-btn.active {
+            background: rgba(52, 152, 219, 0.8);
+        }
+        
+        .btn-icon {
+            font-size: 1.3rem;
+        }
+        
+        .btn-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+        
+        /* 時間選擇器 */
+        .time-selector {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            padding-top: calc(60px + env(safe-area-inset-top));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .time-selector.active {
+            display: flex;
+        }
+        
+        .time-presets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .time-option {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .time-option:active {
+            transform: scale(0.95);
+        }
+        
+        .time-option.selected {
+            background: rgba(52, 152, 219, 0.8);
+        }
+        
+        /* 滑出選單 */
+        .slide-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            bottom: 0;
+            width: 280px;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 1500;
+            padding: 20px;
+            padding-top: calc(60px + env(safe-area-inset-top));
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .slide-menu.active {
+            transform: translateX(-300px);
+        }
+        
+        .menu-section {
+            margin-bottom: 25px;
+        }
+        
+        .menu-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            margin-bottom: 15px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #3498db;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* 吐司提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        /* 載入指示器 */
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        /* 觸控回饋 */
+        @media (hover: hover) {
+            .control-btn:hover {
+                background: rgba(255, 255, 255, 0.25);
+            }
+            
+            .time-option:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+        
+        /* 橫向模式優化 */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .data-cards {
+                flex-direction: row;
+            }
+            
+            .data-card {
+                flex: 1;
+            }
+            
+            .value {
+                font-size: 2.8rem;
+            }
+            
+            .chart-container {
+                height: 180px;
+            }
+            
+            .bottom-controls {
+                padding: 10px;
+            }
+        }
+        
+        /* 大螢幕優化 */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 750px;
+                padding: 20px;
+            }
+            
+            .time-presets {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .bottom-controls {
+                justify-content: center;
+            }
+        }
+        
+        /* 動畫 */
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 狀態欄 -->
+        <div class="status-bar fade-in">
+            <div class="status-item">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="connectionStatus">連線中...</span>
+            </div>
+            <div class="status-item">
+                <span>🕒</span>
+                <span id="lastUpdate">--:--</span>
+            </div>
+            <div class="status-item" onclick="showTimeSelector()" style="cursor: pointer;">
+                <span>⏰</span>
+                <span id="currentTimeRange">1小時</span>
+            </div>
+        </div>
+        
+        <!-- 數據卡片 -->
+        <div class="data-cards">
+            <!-- CO2 卡片 -->
+            <div class="data-card fade-in">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon" style="color: #3498db;">🌫️</span>
+                        CO₂ 濃度
+                    </div>
+                    <span style="opacity: 0.8; font-size: 0.9rem;">ppm</span>
+                </div>
+                
+                <div class="value-display">
+                    <div class="value" id="co2Value">--</div>
+                    <div class="quality-badge" id="co2Quality">--</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="co2Chart"></canvas>
+                </div>
+            </div>
+            
+            <!-- PM2.5 卡片 -->
+            <div class="data-card fade-in">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon" style="color: #e74c3c;">💨</span>
+                        PM2.5 濃度
+                    </div>
+                    <span style="opacity: 0.8; font-size: 0.9rem;">μg/m³</span>
+                </div>
+                
+                <div class="value-display">
+                    <div class="value" id="pm25Value">--</div>
+                    <div class="quality-badge" id="pm25Quality">--</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="pm25Chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部控制欄 -->
+    <div class="bottom-controls">
+        <button class="control-btn" onclick="refreshData()" id="refreshBtn">
+            <span class="btn-icon" id="refreshIcon">🔄</span>
+            <span class="btn-label">更新</span>
+        </button>
+        
+        <button class="control-btn" onclick="toggleAutoRefresh()" id="autoRefreshBtn">
+            <span class="btn-icon">⏱️</span>
+            <span class="btn-label" id="autoRefreshLabel">自動更新</span>
+        </button>
+        
+        <button class="control-btn" onclick="showSettings()">
+            <span class="btn-icon">⚙️</span>
+            <span class="btn-label">設定</span>
+        </button>
+        
+        <button class="control-btn" onclick="exportData()">
+            <span class="btn-icon">📥</span>
+            <span class="btn-label">匯出</span>
+        </button>
+        
+        <button class="control-btn" onclick="showHistory()">
+            <span class="btn-icon">📊</span>
+            <span class="btn-label">歷史</span>
+        </button>
+        
+        <button class="control-btn" onclick="showInfo()">
+            <span class="btn-icon">ℹ️</span>
+            <span class="btn-label">資訊</span>
+        </button>
+    </div>
+    
+    <!-- 時間選擇器 -->
+    <div class="time-selector" id="timeSelector">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 style="font-size: 1.3rem;">選擇時間範圍</h2>
+            <button onclick="hideTimeSelector()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">
+                ✕
+            </button>
+        </div>
+        
+        <div class="time-presets">
+            <button class="time-option selected" onclick="selectTimeRange(1)">
+                最近1小時
+            </button>
+            <button class="time-option" onclick="selectTimeRange(6)">
+                最近6小時
+            </button>
+            <button class="time-option" onclick="selectTimeRange(24)">
+                最近24小時
+            </button>
+            <button class="time-option" onclick="selectTimeRange(168)">
+                最近7天
+            </button>
+            <button class="time-option" onclick="selectTimeRange(720)">
+                最近30天
+            </button>
+            <button class="time-option" onclick="showCustomTime()">
+                自訂時間
+            </button>
+        </div>
+        
+        <div style="margin-top: auto; padding-top: 20px;">
+            <button onclick="hideTimeSelector()" style="width: 100%; padding: 16px; background: #3498db; border: none; border-radius: 15px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer;">
+                確認選擇
+            </button>
+        </div>
+    </div>
+    
+    <!-- 設定選單 -->
+    <div class="slide-menu" id="settingsMenu">
+        <div class="menu-section">
+            <div class="menu-title">圖表設定</div>
+            <div class="menu-item">
+                <span>圖表類型</span>
+                <div>
+                    <button onclick="setChartType('line')" style="padding: 8px 15px; background: #3498db; border: none; border-radius: 8px; color: white; margin-right: 5px; cursor: pointer;">線圖</button>
+                    <button onclick="setChartType('bar')" style="padding: 8px 15px; background: rgba(255,255,255,0.1); border: none; border-radius: 8px; color: white; cursor: pointer;">長條圖</button>
+                </div>
+            </div>
+            <div class="menu-item">
+                <span>平滑曲線</span>
+                <label class="switch">
+                    <input type="checkbox" id="smoothCurve" checked onchange="toggleSmoothCurve()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="menu-item">
+                <span>顯示網格</span>
+                <label class="switch">
+                    <input type="checkbox" id="showGrid" checked onchange="toggleGrid()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-title">更新設定</div>
+            <div class="menu-item">
+                <span>自動更新間隔</span>
+                <select id="refreshInterval" style="padding: 8px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px;">
+                    <option value="10">10秒</option>
+                    <option value="30" selected>30秒</option>
+                    <option value="60">1分鐘</option>
+                    <option value="300">5分鐘</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="menu-section">
+            <div class="menu-title">系統</div>
+            <div class="menu-item" onclick="clearChartData()" style="cursor: pointer;">
+                <span>清除圖表資料</span>
+                <span>🗑️</span>
+            </div>
+            <div class="menu-item" onclick="resetSettings()" style="cursor: pointer;">
+                <span>恢復預設設定</span>
+                <span>🔄</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 吐司提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ 全域變數 ============
+        const API_BASE_URL = 'http://192.168.0.179:5000';
+        let autoRefreshEnabled = true;
+        let currentTimeRange = 1; // 小時
+        let co2Chart = null;
+        let pm25Chart = null;
+        let chartData = {
+            labels: [],
+            co2: [],
+            pm25: []
+        };
+        let isRefreshing = false;
+        
+        // 行動裝置偵測
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isAndroid = /Android/.test(navigator.userAgent);
+        
+        // ============ 初始化 ============
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 手機友善儀表板初始化...');
+            
+            // 行動裝置特殊處理
+            if (isMobile) {
+                document.body.style.fontSize = '16px'; // 手機最佳字體大小
+                
+                // iOS 防止橡皮筋效果
+                if (isIOS) {
+                    document.body.style.WebkitOverflowScrolling = 'touch';
+                }
+            }
+            
+            // 初始化圖表
+            initCharts();
+            
+            // 載入初始資料
+            loadData();
+            
+            // 啟動自動更新
+            startAutoRefresh();
+            
+            // 更新時間顯示
+            updateTimeDisplay();
+            setInterval(updateTimeDisplay, 60000);
+            
+            // 監聽網路狀態
+            setupNetworkMonitoring();
+            
+            // 設定下拉刷新
+            setupPullToRefresh();
+            
+            // 顯示歡迎訊息
+            showToast('儀表板已準備就緒！', 'success');
+        });
+        
+        // ============ 主要功能按鈕 ============
+        
+        // 1. 更新資料
+        async function refreshData() {
+            if (isRefreshing) return;
+            
+            isRefreshing = true;
+            const btn = document.getElementById('refreshBtn');
+            const icon = document.getElementById('refreshIcon');
+            
+            // 顯示載入狀態
+            btn.style.opacity = '0.7';
+            icon.textContent = '⏳';
+            
+            try {
+                await loadData();
+                
+                // 成功回饋
+                if (isMobile && navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+                
+                showToast('資料更新成功！', 'success');
+                
+            } catch (error) {
+                console.error('更新失敗:', error);
+                showToast('更新失敗，請檢查連線', 'error');
+            } finally {
+                // 恢復按鈕狀態
+                setTimeout(() => {
+                    btn.style.opacity = '1';
+                    icon.textContent = '🔄';
+                    isRefreshing = false;
+                }, 1000);
+            }
+        }
+        
+        // 2. 切換自動更新
+        function toggleAutoRefresh() {
+            autoRefreshEnabled = !autoRefreshEnabled;
+            const btn = document.getElementById('autoRefreshBtn');
+            const label = document.getElementById('autoRefreshLabel');
+            
+            if (autoRefreshEnabled) {
+                label.textContent = '自動更新';
+                btn.style.background = 'rgba(52, 152, 219, 0.8)';
+                startAutoRefresh();
+                showToast('自動更新已開啟', 'success');
+            } else {
+                label.textContent = '手動更新';
+                btn.style.background = 'rgba(255, 255, 255, 0.15)';
+                stopAutoRefresh();
+                showToast('自動更新已關閉', 'info');
+            }
+        }
+        
+        // 3. 顯示設定選單
+        function showSettings() {
+            document.getElementById('settingsMenu').classList.add('active');
+        }
+        
+        // 4. 匯出資料
+        function exportData() {
+            // 這裡可以實作匯出功能
+            showToast('匯出功能準備中...', 'info');
+        }
+        
+        // 5. 顯示歷史資料
+        function showHistory() {
+            // 這裡可以實作歷史資料顯示
+            showToast('歷史資料功能準備中...', 'info');
+        }
+        
+        // 6. 顯示資訊
+        function showInfo() {
+            const info = `
+                環境監控系統 v2.0
+                
+                API 伺服器: ${API_BASE_URL}
+                資料更新: 每30秒
+                時間範圍: ${currentTimeRange} 小時
+                
+                開發者: 您的姓名
+                版本: 2024.01
+            `;
+            
+            alert(info.replace(/^\s+/gm, ''));
+        }
+        
+        // ============ 時間選擇器功能 ============
+        
+        function showTimeSelector() {
+            document.getElementById('timeSelector').classList.add('active');
+        }
+        
+        function hideTimeSelector() {
+            document.getElementById('timeSelector').classList.remove('active');
+        }
+        
+        function selectTimeRange(hours) {
+            currentTimeRange = hours;
+            
+            // 更新按鈕狀態
+            document.querySelectorAll('.time-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // 標記選中的按鈕
+            const buttons = document.querySelectorAll('.time-option');
+            for (let btn of buttons) {
+                if (btn.textContent.includes(hours + '小時') || 
+                    btn.textContent.includes(hours + '天')) {
+                    btn.classList.add('selected');
+                    break;
+                }
+            }
+            
+            // 更新顯示
+            document.getElementById('currentTimeRange').textContent = 
+                hours < 24 ? `${hours}小時` : `${hours/24}天`;
+            
+            // 載入新資料
+            loadData();
+            
+            showToast(`時間範圍設定為: ${hours < 24 ? `${hours}小時` : `${hours/24}天`}`, 'success');
+        }
+        
+        function showCustomTime() {
+            // 這裡可以實作自訂時間選擇
+            showToast('自訂時間功能準備中...', 'info');
+        }
+        
+        // ============ 圖表設定功能 ============
+        
+        function setChartType(type) {
+            if (co2Chart) {
+                co2Chart.config.type = type;
+                co2Chart.update();
+            }
+            
+            if (pm25Chart) {
+                pm25Chart.config.type = type;
+                pm25Chart.update();
+            }
+            
+            showToast(`圖表類型切換為: ${type === 'line' ? '線圖' : '長條圖'}`, 'success');
+        }
+        
+        function toggleSmoothCurve() {
+            const isChecked = document.getElementById('smoothCurve').checked;
+            
+            if (co2Chart) {
+                co2Chart.options.elements.line.tension = isChecked ? 0.4 : 0;
+                co2Chart.update();
+            }
+            
+            if (pm25Chart) {
+                pm25Chart.options.elements.line.tension = isChecked ? 0.4 : 0;
+                pm25Chart.update();
+            }
+        }
+        
+        function toggleGrid() {
+            const isChecked = document.getElementById('showGrid').checked;
+            const gridColor = isChecked ? 'rgba(255, 255, 255, 0.1)' : 'transparent';
+            
+            if (co2Chart) {
+                co2Chart.options.scales.x.grid.color = gridColor;
+                co2Chart.options.scales.y.grid.color = gridColor;
+                co2Chart.update();
+            }
+            
+            if (pm25Chart) {
+                pm25Chart.options.scales.x.grid.color = gridColor;
+                pm25Chart.options.scales.y.grid.color = gridColor;
+                pm25Chart.update();
+            }
+        }
+        
+        function clearChartData() {
+            if (confirm('確定要清除圖表上的所有資料點嗎？')) {
+                chartData = { labels: [], co2: [], pm25: [] };
+                
+                if (co2Chart) {
+                    co2Chart.data.labels = [];
+                    co2Chart.data.datasets[0].data = [];
+                    co2Chart.update();
+                }
+                
+                if (pm25Chart) {
+                    pm25Chart.data.labels = [];
+                    pm25Chart.data.datasets[0].data = [];
+                    pm25Chart.update();
+                }
+                
+                showToast('圖表資料已清除', 'success');
+            }
+        }
+        
+        function resetSettings() {
+            if (confirm('確定要恢復所有設定為預設值嗎？')) {
+                // 重設所有設定
+                document.getElementById('smoothCurve').checked = true;
+                document.getElementById('showGrid').checked = true;
+                document.getElementById('refreshInterval').value = '30';
+                
+                // 重新初始化圖表
+                initCharts();
+                
+                // 重設自動更新
+                autoRefreshEnabled = true;
+                startAutoRefresh();
+                
+                showToast('所有設定已恢復預設值', 'success');
+            }
+        }
+        
+        // ============ 資料載入與處理 ============
+        
+        async function loadData() {
+            try {
+                // 更新連線狀態
+                updateConnectionStatus('connecting');
+                
+                // 載入即時資料
+                const latestData = await fetchLatestData();
+                
+                if (latestData) {
+                    updateDisplay(latestData);
+                    updateCharts(latestData);
+                    updateConnectionStatus('connected');
+                }
+                
+                // 載入歷史資料
+                await loadHistoricalData();
+                
+            } catch (error) {
+                console.error('載入資料失敗:', error);
+                updateConnectionStatus('disconnected');
+                throw error;
+            }
+        }
+        
+        async function fetchLatestData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/data/latest`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                return await response.json();
+                
+            } catch (error) {
+                console.error('取得最新資料失敗:', error);
+                return null;
+            }
+        }
+        
+        async function loadHistoricalData() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/data/history?hours=${currentTimeRange}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // 更新圖表歷史資料
+                updateHistoricalCharts(data);
+                
+            } catch (error) {
+                console.error('載入歷史資料失敗:', error);
+            }
+        }
+        
+        // ============ 顯示更新 ============
+        
+        function updateDisplay(data) {
+            if (!data) return;
+            
+            // 更新數值
+            document.getElementById('co2Value').textContent = data.co2.toFixed(1);
+            document.getElementById('pm25Value').textContent = data.pm25.toFixed(2);
+            
+            // 更新時間
+            const timeStr = data.timestamp ? 
+                data.timestamp.split(' ')[1].substring(0, 5) : 
+                new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').textContent = timeStr;
+            
+            // 更新品質指示
+            updateQualityIndicators(data.co2, data.pm25);
+        }
+        
+        function updateQualityIndicators(co2, pm25) {
+            // CO2 品質評估
+            let co2Quality, co2Class;
+            if (co2 < 800) {
+                co2Quality = '良好';
+                co2Class = 'good';
+            } else if (co2 < 1200) {
+                co2Quality = '普通';
+                co2Class = 'moderate';
+            } else {
+                co2Quality = '不良';
+                co2Class = 'unhealthy';
+            }
+            
+            // PM2.5 品質評估
+            let pm25Quality, pm25Class;
+            if (pm25 < 15) {
+                pm25Quality = '良好';
+                pm25Class = 'good';
+            } else if (pm25 < 35) {
+                pm25Quality = '普通';
+                pm25Class = 'moderate';
+            } else {
+                pm25Quality = '不良';
+                pm25Class = 'unhealthy';
+            }
+            
+            // 更新顯示
+            const co2Element = document.getElementById('co2Quality');
+            co2Element.textContent = co2Quality;
+            co2Element.className = `quality-badge ${co2Class}`;
+            
+            const pm25Element = document.getElementById('pm25Quality');
+            pm25Element.textContent = pm25Quality;
+            pm25Element.className = `quality-badge ${pm25Class}`;
+        }
+        
+        function updateTimeDisplay() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('lastUpdate').textContent = timeStr;
+        }
+        
+        // ============ 圖表功能 ============
+        
+        function initCharts() {
+            const co2Ctx = document.getElementById('co2Chart').getContext('2d');
+            const pm25Ctx = document.getElementById('pm25Chart').getContext('2d');
+            
+            // CO2 圖表
+            co2Chart = new Chart(co2Ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'CO₂',
+                        data: chartData.co2,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                maxRotation: 0,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+            
+            // PM2.5 圖表
+            pm25Chart = new Chart(pm25Ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [{
+                        label: 'PM2.5',
+                        data: chartData.pm25,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                maxRotation: 0,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+        
+        function updateCharts(data) {
+            const now = new Date();
+            const timeLabel = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            
+            // 限制資料點數量
+            const maxPoints = 20;
+            
+            chartData.labels.push(timeLabel);
+            chartData.co2.push(data.co2);
+            chartData.pm25.push(data.pm25);
+            
+            if (chartData.labels.length > maxPoints) {
+                chartData.labels.shift();
+                chartData.co2.shift();
+                chartData.pm25.shift();
+            }
+            
+            // 更新圖表
+            co2Chart.data.labels = chartData.labels;
+            co2Chart.data.datasets[0].data = chartData.co2;
+            co2Chart.update('none');
+            
+            pm25Chart.data.labels = chartData.labels;
+            pm25Chart.data.datasets[0].data = chartData.pm25;
+            pm25Chart.update('none');
+        }
+        
+        function updateHistoricalCharts(data) {
+            if (!data || data.length === 0) return;
+            
+            // 取最後20個點或平均採樣
+            const sampleSize = Math.min(20, data.length);
+            const step = Math.max(1, Math.floor(data.length / sampleSize));
+            
+            const sampledLabels = [];
+            const sampledCo2 = [];
+            const sampledPm25 = [];
+            
+            for (let i = 0; i < sampleSize; i++) {
+                const idx = Math.min(i * step, data.length - 1);
+                const item = data[idx];
+                const time = new Date(item.timestamp);
+                const timeLabel = time.getHours().toString().padStart(2, '0') + ':' + 
+                                 time.getMinutes().toString().padStart(2, '0');
+                
+                sampledLabels.push(timeLabel);
+                sampledCo2.push(item.co2);
+                sampledPm25.push(item.pm25);
+            }
+            
+            // 更新圖表
+            co2Chart.data.labels = sampledLabels;
+            co2Chart.data.datasets[0].data = sampledCo2;
+            co2Chart.update();
+            
+            pm25Chart.data.labels = sampledLabels;
+            pm25Chart.data.datasets[0].data = sampledPm25;
+            pm25Chart.update();
+        }
+        
+        // ============ 狀態管理 ============
+        
+        function updateConnectionStatus(status) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('connectionStatus');
+            
+            switch(status) {
+                case 'connected':
+                    dot.className = 'status-dot connected';
+                    text.textContent = '已連線';
+                    text.style.color = '#2ed573';
+                    break;
+                case 'connecting':
+                    dot.className = 'status-dot';
+                    text.textContent = '連線中...';
+                    text.style.color = '#f39c12';
+                    break;
+                case 'disconnected':
+                    dot.className = 'status-dot';
+                    text.textContent = '離線';
+                    text.style.color = '#ff4757';
+                    break;
+            }
+        }
+        
+        function setupNetworkMonitoring() {
+            window.addEventListener('online', function() {
+                updateConnectionStatus('connected');
+                showToast('網路連線恢復', 'success');
+                loadData();
+            });
+            
+            window.addEventListener('offline', function() {
+                updateConnectionStatus('disconnected');
+                showToast('網路連線中斷', 'error');
+            });
+        }
+        
+        // ============ 自動更新控制 ============
+        
+        function startAutoRefresh() {
+            const interval = parseInt(document.getElementById('refreshInterval').value) * 1000;
+            
+            if (autoRefreshEnabled) {
+                setInterval(() => {
+                    if (!isRefreshing) {
+                        loadData();
+                    }
+                }, interval);
+            }
+        }
+        
+        function stopAutoRefresh() {
+            // 清除定時器
+            const highestId = window.setTimeout(() => {}, 0);
+            for (let i = 0; i < highestId; i++) {
+                window.clearInterval(i);
+            }
+        }
+        
+        // ============ 手機專用功能 ============
+        
+        function setupPullToRefresh() {
+            if (!isMobile) return;
+            
+            let startY = 0;
+            let distance = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+            
+            document.addEventListener('touchmove', function(e) {
+                const currentY = e.touches[0].clientY;
+                distance = currentY - startY;
+                
+                // 在頂部且下拉超過100px時觸發刷新
+                if (window.scrollY === 0 && distance > 100 && !isRefreshing) {
+                    refreshData();
+                }
+            }, { passive: true });
+        }
+        
+        // ============ UI 工具函數 ============
+        
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            
+            // 設定樣式
+            toast.textContent = message;
+            toast.style.background = type === 'success' ? 'rgba(46, 213, 115, 0.9)' :
+                                   type === 'error' ? 'rgba(255, 71, 87, 0.9)' :
+                                   'rgba(52, 152, 219, 0.9)';
+            
+            // 顯示
+            toast.classList.add('show');
+            
+            // 3秒後隱藏
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+            
+            // 手機震動回饋
+            if (isMobile && navigator.vibrate) {
+                if (type === 'success') {
+                    navigator.vibrate([50, 50, 50]);
+                } else if (type === 'error') {
+                    navigator.vibrate([200]);
+                }
+            }
+        }
+        
+        // 關閉選單的點擊事件
+        document.addEventListener('click', function(e) {
+            const settingsMenu = document.getElementById('settingsMenu');
+            const timeSelector = document.getElementById('timeSelector');
+            
+            // 點擊設定選單外部關閉選單
+            if (settingsMenu.classList.contains('active') && 
+                !settingsMenu.contains(e.target) && 
+                !e.target.closest('.control-btn[onclick*="showSettings"]')) {
+                settingsMenu.classList.remove('active');
+            }
+            
+            // 點擊時間選擇器外部關閉選擇器
+            if (timeSelector.classList.contains('active') && 
+                !timeSelector.contains(e.target) && 
+                !e.target.closest('.status-item[onclick*="showTimeSelector"]')) {
+                timeSelector.classList.remove('active');
+            }
+        });
+        
+        // 防止選單內滾動傳遞到 body
+        document.querySelectorAll('.slide-menu, .time-selector').forEach(el => {
+            el.addEventListener('touchmove', function(e) {
+                e.stopPropagation();
+            }, { passive: true });
+        });
+    </script>
+</body>
+</html>
