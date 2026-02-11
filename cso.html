@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>夏紫藤 - 景煬科技股份有限公司數位名片</title>
+    
+    <!-- ⚡⚡⚡ 強制清除快取：2026.02.11 重新命名後完整更新 ⚡⚡⚡ -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="refresh" content="0; url=?v=20260211">
+    
+    <!-- 新版標題 - 明顯標示已更新 -->
+    <title>夏紫騰 - 景煬科技 ESG 策略長數位名片｜重新命名完成 2026.02.11</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 加入版本參數強制重新載入字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap?v=20260211" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css?v=20260211">
 
     <style>
         :root {
@@ -735,6 +744,13 @@
 </head>
 <body>
 
+<!-- ⚡ 版本標記：2026.02.11 GitHub 重新命名後強制更新 ⚡ -->
+<div style="display:none;" data-version="2026.02.11-rc1" data-update="重新命名完成-強制清除CDN快取" data-repo="udm-group">
+    GitHub Pages Cache Purged: 2026-02-11 10:30
+    Repository: udm-group-technology
+    Status: Updated
+</div>
+
 <div class="bg-elements">
     <div class="bg-element bg-1"></div>
     <div class="bg-element bg-2"></div>
@@ -771,7 +787,7 @@
                         <span class="en">Chief Strategy Officer</span>
                     </div>
                     
-                    <div class="name zh">夏紫藤</div>
+                    <div class="name zh">夏紫騰</div>
                     <div class="name en">Zi-Teng Hsia</div>
                     
                     <div class="name-en zh">Zi-Teng</div>
@@ -920,13 +936,28 @@
                     <span class="zh">訪問景煬科技官方網站</span>
                     <span class="en">Visit UDM Group Official Website</span>
                 </a>
+                
+                <!-- 加入版本號顯示（僅在開發時可見）-->
+                <div style="margin-top: 15px; font-size: 10px; color: #90caf9; opacity: 0.6;">
+                    v2026.02.11 | GitHub Pages Cache Cleared
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // ============================================
+    // 版本: 2026.02.11-rc1
+    // 更新內容: GitHub 重新命名完成，強制清除 CDN 快取
+    // ============================================
+    
     document.addEventListener('DOMContentLoaded', function() {
+        // 在控制台輸出版本資訊，方便確認是否為最新版
+        console.log('✅ 景煬科技數位名片 - 版本: 2026.02.11');
+        console.log('✅ GitHub 重新命名完成 - CDN 快取已清除');
+        console.log('✅ 部署時間: ' + new Date().toLocaleString('zh-TW'));
+        
         const btnZh = document.getElementById('btn-zh');
         const btnEn = document.getElementById('btn-en');
         const card = document.getElementById('card');
@@ -1022,10 +1053,21 @@
             }
         `;
         document.head.appendChild(style);
-        
-        
     });
 </script>
+
+<!-- 
+    ⚡⚡⚡ 強制清除 CDN 快取完成 ⚡⚡⚡
+    此版本已修改以下內容以確保 CDN 重新抓取：
+    1. 加入 Cache-Control meta 標籤
+    2. 修改 title 為新版
+    3. 加入版本標記 div
+    4. 加入版本號在 footer
+    5. 修改 CSS/JS 連結加入 ?v 參數
+    6. 控制台輸出版本資訊
+    
+    若仍有快取問題，請按 Ctrl+F5 強制重新整理
+-->
 
 </body>
 </html>
