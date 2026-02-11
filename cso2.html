@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>夏紫騰 - 景煬科技股份有限公司數位名片</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* 藍色主題 - 與景煬科技形象更匹配 */
+            --primary-blue: #1e88e5;
+            --primary-dark-blue: #0d47a1;
+            --accent-teal: #00acc1;
+            --accent-green: #43a047;
+            --accent-amber: #ffb300;
+            --accent-cyan: #26c6da;
+            --bg-gradient: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            --card-gradient: linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%);
+            --avatar-gradient: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue), var(--accent-teal));
+            --btn-primary-gradient: linear-gradient(135deg, var(--primary-blue), var(--primary-dark-blue));
+            --btn-secondary-gradient: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
+            --btn-success-gradient: linear-gradient(135deg, var(--accent-green), #66bb6a);
+            --text-main: #0d47a1;
+            --text-secondary: #1a237e;
+            --text-subtle: #1565c0;
+            --border-light: #90caf9;
+            --border-medium: #64b5f6;
+            --shadow-light: 0 4px 20px rgba(30, 136, 229, 0.05);
+            --shadow-medium: 0 10px 30px rgba(30, 136, 229, 0.1);
+            --shadow-heavy: 0 20px 50px rgba(30, 136, 229, 0.15);
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --radius-circle: 50%;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Noto Sans TC", "Segoe UI", system-ui, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 裝飾背景元素 */
+        .bg-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: var(--radius-circle);
+            opacity: 0.05;
+            filter: blur(40px);
+        }
+
+        .bg-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--primary-blue);
+            top: -150px;
+            right: -150px;
+        }
+
+        .bg-2 {
+            width: 350px;
+            height: 350px;
+            background: var(--primary-dark-blue);
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .bg-3 {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-teal);
+            top: 40%;
+            left: 10%;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 550px;
+            position: relative;
+        }
+
+        .card {
+            background: var(--card-gradient);
+            border-radius: var(--radius-xl);
+            padding: 35px 30px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-heavy);
+            transform: translateY(-5px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--avatar-gradient);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            z-index: 2;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(30, 136, 229, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(13, 71, 161, 0.03) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 語言切換 */
+        .language-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 50px;
+            padding: 6px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-light);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-toggle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .language-toggle:hover::before {
+            transform: translateX(100%);
+        }
+
+        .lang-btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-btn.active {
+            background: var(--btn-primary-gradient);
+            color: white;
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.3);
+        }
+
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 頭像區 */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--border-light);
+            position: relative;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-right: 25px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-circle);
+            background: var(--avatar-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 32px;
+            border: 5px solid white;
+            box-shadow: 0 10px 25px rgba(30, 136, 229, 0.25);
+            position: relative;
+            z-index: 2;
+            transition: var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 15px 35px rgba(30, 136, 229, 0.35);
+        }
+
+        .avatar-ring {
+            position: absolute;
+            width: 110px;
+            height: 110px;
+            border-radius: var(--radius-circle);
+            border: 2px dashed var(--primary-blue);
+            top: -5px;
+            left: -5px;
+            animation: rotate 20s linear infinite;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info {
+            flex: 1;
+        }
+
+        /* 策略長職銜設計 */
+        .title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-teal), var(--primary-blue));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .title i {
+            font-size: 18px;
+            color: var(--accent-amber);
+            text-shadow: 0 0 5px rgba(255, 179, 0, 0.3);
+        }
+
+        .name {
+            font-size: 30px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            background: var(--btn-primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+
+        .name-en {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .company {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .company-sub {
+            font-size: 14px;
+            color: var(--text-subtle);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* 專業技能標籤 */
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .skill-tag {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .skill-tag:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(30, 136, 229, 0.2);
+        }
+
+        /* 聯絡資訊區 */
+        .contact-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title i {
+            font-size: 20px;
+            background: var(--btn-primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 18px 20px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(227, 242, 253, 0.9));
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(30, 136, 229, 0.03), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .contact-item:hover::before {
+            transform: translateX(100%);
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-light);
+            border-color: var(--primary-blue);
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: var(--btn-primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            margin-right: 18px;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(30, 136, 229, 0.2);
+            transition: var(--transition);
+        }
+
+        .contact-item:hover .contact-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .contact-details {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: var(--text-subtle);
+            margin-bottom: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .contact-link {
+            color: var(--primary-blue);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            display: inline-block;
+        }
+
+        .contact-link:hover {
+            color: var(--primary-dark-blue);
+        }
+
+        .contact-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--btn-primary-gradient);
+            transition: width 0.3s ease;
+        }
+
+        .contact-link:hover::after {
+            width: 100%;
+        }
+
+        /* 專業簡介 */
+        .bio-section {
+            background: linear-gradient(135deg, rgba(227, 242, 253, 0.8), rgba(187, 222, 251, 0.8));
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: var(--shadow-light);
+        }
+
+        .bio-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bio-title i {
+            color: var(--primary-blue);
+        }
+
+        .bio-content {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 10px;
+        }
+
+        .bio-highlight {
+            background: linear-gradient(120deg, rgba(30, 136, 229, 0.1), rgba(13, 71, 161, 0.1));
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        /* 行動按鈕 */
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .actions {
+                flex-direction: column;
+            }
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-primary {
+            background: var(--btn-primary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(30, 136, 229, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(30, 136, 229, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--btn-secondary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 172, 193, 0.25);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 172, 193, 0.35);
+        }
+
+        .btn-success {
+            background: var(--btn-success-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(67, 160, 71, 0.25);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(67, 160, 71, 0.35);
+        }
+
+        /* 網站連結 */
+        .website-section {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .website-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, rgba(227, 242, 253, 0.9), rgba(187, 222, 251, 0.9));
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition);
+        }
+
+        .website-link:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 136, 229, 0.25);
+        }
+
+        .website-link i {
+            font-size: 18px;
+        }
+
+        /* 社交媒體 */
+        .social-media {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-circle);
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid var(--border-light);
+        }
+
+        .social-icon:hover {
+            background: var(--btn-primary-gradient);
+            color: white;
+            transform: translateY(-5px) rotate(10deg);
+            box-shadow: 0 8px 15px rgba(30, 136, 229, 0.25);
+        }
+
+        /* 隱藏英文內容 - 預設顯示中文 */
+        .en {
+            display: none;
+        }
+
+        /* 英文模式 */
+        .en-mode .zh {
+            display: none;
+        }
+
+        .en-mode .en {
+            display: block;
+        }
+
+        /* 動態裝飾點 */
+        .floating-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-circle);
+            background: var(--primary-blue);
+            opacity: 0.1;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-elements">
+    <div class="bg-element bg-1"></div>
+    <div class="bg-element bg-2"></div>
+    <div class="bg-element bg-3"></div>
+</div>
+
+<div class="floating-dots" id="floatingDots"></div>
+
+<div class="card-container">
+    <div class="card" id="card">
+        <div class="language-toggle">
+            <button class="lang-btn active" id="btn-zh">
+                <i class="fas fa-language"></i>
+                <span class="zh">中文</span>
+                <span class="en">Chinese</span>
+            </button>
+            <button class="lang-btn" id="btn-en">
+                <i class="fas fa-globe"></i>
+                <span class="zh">English</span>
+                <span class="en">English</span>
+            </button>
+        </div>
+
+        <div class="card-content">
+            <div class="header">
+                <div class="avatar-container">
+                    <div class="avatar-ring"></div>
+                    <div class="avatar">CSO</div>
+                </div>
+                <div class="info">
+                    <div class="title">
+                        <i class="fas fa-user-tie"></i>
+                        <span class="zh">ESG 策略行銷</span>
+                        <span class="en">Chief Strategy Officer</span>
+                    </div>
+                    
+                    <div class="name zh">夏紫騰</div>
+                    <div class="name en">Zi-Teng Hsia</div>
+                    
+                    <div class="name-en zh">Zi-Teng</div>
+                    
+                    <div class="company zh">景煬科技股份有限公司</div>
+                    <div class="company en">UDM Group Technology Co., Ltd.</div>
+                    
+                    <div class="company-sub zh">ESG 策略長</div>
+                    <div class="company-sub en">ESG Chief Strategy Officer</div>
+                    
+                    <div class="skills">
+                        <span class="skill-tag zh">ESG 策略長</span>
+                        <span class="skill-tag en">ESG CSO</span>
+                        <span class="skill-tag zh">能源管理科技</span>
+                        <span class="skill-tag en">EMS Technology</span>
+                        <span class="skill-tag zh">永續發展策略</span>
+                        <span class="skill-tag en">Sustainability Strategy</span>
+                        <span class="skill-tag zh">ESG 報告編制</span>
+                        <span class="skill-tag en">ESG Reporting</span>
+                        <span class="skill-tag zh">碳管理系統</span>
+                        <span class="skill-tag en">Carbon Management</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <div class="section-title">
+                    <i class="fas fa-address-card"></i>
+                    <span class="zh">聯絡資訊</span>
+                    <span class="en">Contact Information</span>
+                </div>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">行動電話</div>
+                            <div class="contact-label en">Mobile</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="tel:0931339419">0931-339-419</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">辦公室電話</div>
+                            <div class="contact-label en">Office Phone</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="tel:02-6620-2388">(02) 6620-2388 EXT.19</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">電子郵件</div>
+                            <div class="contact-label en">Email</div>
+                            <div class="contact-value">
+                                <a class="contact-link" href="mailto:Sti@hotmail.com.tw">Sti@hotmail.com.tw</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">地址</div>
+                            <div class="contact-label en">Address</div>
+                            <div class="contact-value">
+                                <span class="zh">新北市中和區中正路872號12樓之1</span>
+                                <span class="en">12F-1, No.872, Jhongjheng Rd., Jhonghe Dist., New Taipei City 235, Taiwan</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-fax"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">傳真</div>
+                            <div class="contact-label en">Fax</div>
+                            <div class="contact-value">(02) 6620-2720</div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <div class="contact-details">
+                            <div class="contact-label zh">統一編號</div>
+                            <div class="contact-label en">Tax ID</div>
+                            <div class="contact-value">00195374</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bio-section">
+                <div class="bio-title">
+                    <i class="fas fa-user-tie"></i>
+                    <span class="zh">專業簡介</span>
+                    <span class="en">Professional Profile</span>
+                </div>
+                <div class="bio-content zh">
+                    現任<span class="bio-highlight">景煬科技股份有限公司 ESG 策略長</span>。擁有<span class="bio-highlight">豐富的ESG策略規劃與永續發展經驗</span>與<span class="bio-highlight">專業的能源管理系統知識</span>，負責<span class="bio-highlight">公司ESG策略制定與永續發展規劃</span>。具備<span class="bio-highlight">卓越的領導能力</span>與<span class="bio-highlight">跨部門協調經驗</span>，致力於<span class="bio-highlight">推動綠色轉型</span>與<span class="bio-highlight">提升企業永續價值</span>，為企業與客戶提供最優質的ESG解決方案。
+                </div>
+                <div class="bio-content en">
+                    Currently serving as <span class="bio-highlight">ESG Chief Strategy Officer at UDM Group Technology Co., Ltd.</span>. Possesses <span class="bio-highlight">extensive experience in ESG strategy formulation and sustainable development</span> and <span class="bio-highlight">professional expertise in Energy Management Systems (EMS)</span>. Responsible for <span class="bio-highlight">corporate ESG strategy development and sustainability planning</span>. Demonstrates <span class="bio-highlight">exceptional leadership skills</span> and <span class="bio-highlight">cross-departmental coordination experience</span>, committed to <span class="bio-highlight">driving green transformation</span> and <span class="bio-highlight">enhancing corporate sustainable value</span>, providing optimal ESG solutions for enterprises and clients.
+                </div>
+            </div>
+
+            <div class="actions">
+                <a class="btn btn-primary" href="tel:0931339419">
+                    <i class="fas fa-phone"></i>
+                    <span class="zh">撥打行動電話</span>
+                    <span class="en">Call Mobile</span>
+                </a>
+                <a class="btn btn-secondary" href="mailto:Sti@hotmail.com.tw?subject=業務洽詢&body=夏總您好，我想了解...">
+                    <i class="fas fa-envelope"></i>
+                    <span class="zh">發送郵件</span>
+                    <span class="en">Send Email</span>
+                </a>
+                <a class="btn btn-success" href="https://maps.google.com/?q=新北市中和區中正路872號12樓之1" target="_blank">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="zh">查看地址</span>
+                    <span class="en">View Address</span>
+                </a>
+            </div>
+
+            <div class="website-section">
+                <a class="website-link" href="https://jpesg.netlify.app/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span class="zh">訪問景煬科技官方網站</span>
+                    <span class="en">Visit UDM Group Official Website</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnZh = document.getElementById('btn-zh');
+        const btnEn = document.getElementById('btn-en');
+        const card = document.getElementById('card');
+        
+        // 預設顯示中文
+        card.classList.remove('en-mode');
+        
+        // 中文按鈕點擊
+        btnZh.addEventListener('click', function() {
+            card.classList.remove('en-mode');
+            btnZh.classList.add('active');
+            btnEn.classList.remove('active');
+        });
+        
+        // 英文按鈕點擊
+        btnEn.addEventListener('click', function() {
+            card.classList.add('en-mode');
+            btnEn.classList.add('active');
+            btnZh.classList.remove('active');
+        });
+        
+        // 創建浮動點
+        const floatingDots = document.getElementById('floatingDots');
+        const dotCount = 20;
+        
+        for (let i = 0; i < dotCount; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            
+            // 隨機位置
+            dot.style.left = `${Math.random() * 100}%`;
+            dot.style.top = `${Math.random() * 100}%`;
+            
+            // 隨機大小
+            const size = Math.random() * 4 + 2;
+            dot.style.width = `${size}px`;
+            dot.style.height = `${size}px`;
+            
+            // 隨機顏色
+            const colors = ['#1e88e5', '#0d47a1', '#00acc1', '#43a047', '#ffb300'];
+            dot.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // 隨機動畫延遲
+            dot.style.animationDelay = `${Math.random() * 3}s`;
+            dot.style.animationDuration = `${Math.random() * 2 + 2}s`;
+            
+            floatingDots.appendChild(dot);
+        }
+        
+        // 為所有互動元素添加點擊效果
+        const interactiveElements = document.querySelectorAll('.contact-item, .btn, .skill-tag, .social-icon, .website-link');
+        
+        interactiveElements.forEach(element => {
+            element.addEventListener('click', function(e) {
+                // 創建漣漪效果
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.5);
+                    transform: scale(0);
+                    animation: ripple-animation 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    pointer-events: none;
+                `;
+                
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+        
+        // 添加CSS動畫
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        
+    });
+</script>
+
+</body>
+</html>
